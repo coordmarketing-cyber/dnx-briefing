@@ -2,13 +2,15 @@
 // Busca os 6 boards do Grupo DNX (em paralelo) e devolve no formato que o frontend espera.
 // Credenciais ficam em process.env.TRELLO_KEY e process.env.TRELLO_TOKEN.
 
+// IMPORTANTE: usamos os IDs LONGOS dos boards (24 caracteres), obtidos via /1/members/me/boards.
+// IDs curtos (da URL) às vezes não funcionam nos endpoints de lists/cards.
 const BOARDS = [
-  { name: 'Marca Pablo',                 id: '4ywtniSA' },
-  { name: 'DNX HOTELARIA - Projeto Ohana', id: 'BUZyEHjw' },
-  { name: 'GRUPO DNX | Ceará Autoral',   id: 'BcDgqTML' },
-  { name: "JORNADA DE CAMPANHAS'26",     id: 'RRhzNGUS' },
-  { name: 'DNX HOTELARIA - Farol',       id: 'iYQB3Zmn' },
-  { name: 'HUB NB BY DESCO',             id: 'zwjOYT9q' }
+  { name: 'Marca Pablo',                   id: '69c5223867d694afd7d17e4d' },
+  { name: 'DNX HOTELARIA - Projeto Ohana', id: '69c145907c0ee3cd89c50cad' },
+  { name: 'GRUPO DNX | Ceará Autoral',     id: '69c2b29bd9183074fd575b9f' },
+  { name: "JORNADA DE CAMPANHAS'26",       id: '697a1c4abd45ce76bea89fb3' },
+  { name: 'DNX HOTELARIA - Farol',         id: '69c290d58c04dbc806ae7723' },
+  { name: 'HUB NB BY DESCO',               id: '69c66fcbfbf6936927e1d5f0' }
 ];
 
 export default async function handler(req, res) {
@@ -43,7 +45,7 @@ export default async function handler(req, res) {
       const listMap = {};
       lists.forEach(l => { listMap[l.id] = l.name; });
 
-      // Cards do board (todos, não só os abertos, pra refletir o que o HTML original tinha)
+      // Cards do board
       const cardsRes = await fetch(
         `https://api.trello.com/1/boards/${board.id}/cards?key=${KEY}&token=${TOKEN}&fields=name,due,dueComplete,shortUrl,idList`
       );
