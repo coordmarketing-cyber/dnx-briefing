@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
 
   const NOTION_KEY = process.env.NOTION_KEY;
-  const DB_ID = 'bf3d8a4d-6e2c-4306-a2ef-e82322d89209';
+  const DB_ID = '2f249b0c7c4749fd8151b97e7ef0d7b6';
 
   if (!NOTION_KEY) {
     return res.status(500).json({
