@@ -553,17 +553,40 @@ function rMonday(el, board) {
   else if (TF==='tomorrow') allCards = allCards.filter(c=>c.status==='tomorrow');
   else if (TF==='active') allCards = allCards.filter(c=>!['done','none'].includes(c.status));
 
-  // Ordem fixa das etapas (do mais atrasado pro concluído)
-  const ETAPA_ORDER = ['A iniciar', 'A definir', 'Orçando', 'Em produção', 'Em aprovação', 'Aprovado', 'Parado', 'Concluído'];
+  // Ordem fixa das etapas do Monday (do mais inicial pro concluído)
+  // Aceita variações de capitalização e acento; usa o nome do Monday como referência.
+  const ETAPA_ORDER = [
+    'A INICIAR', 'A iniciar',
+    'MAPEAMENTO', 'Mapeamento',
+    'ORÇAMENTO', 'Orçamento', 'ORCAMENTO',
+    'EM PRODUÇÃO', 'Em produção', 'EM PRODUCAO',
+    'EM APROVAÇÃO', 'Em aprovação', 'EM APROVACAO',
+    'ENTREGUE', 'Entregue', 'APROVADO', 'Aprovado',
+    'PARADO', 'Parado',
+    'CONCLUÍDO', 'Concluído', 'CONCLUIDO'
+  ];
 
-  // Normaliza nome da etapa (lida com variações tipo "Em produçao" sem til)
+  // Normaliza nome da etapa pra agrupar variações sob o mesmo título
   const normEtapa = (e) => {
     if (!e) return 'Sem etapa';
+    const t = e.trim();
     const map = {
-      'Em produçao': 'Em produção',
-      'Concluido': 'Concluído'
+      'a iniciar': 'A INICIAR',
+      'mapeamento': 'MAPEAMENTO',
+      'orçamento': 'ORÇAMENTO',
+      'orcamento': 'ORÇAMENTO',
+      'em produção': 'EM PRODUÇÃO',
+      'em producao': 'EM PRODUÇÃO',
+      'em aprovação': 'EM APROVAÇÃO',
+      'em aprovacao': 'EM APROVAÇÃO',
+      'entregue': 'ENTREGUE',
+      'aprovado': 'ENTREGUE', // tratar Aprovado como ENTREGUE
+      'parado': 'PARADO',
+      'concluído': 'CONCLUÍDO',
+      'concluido': 'CONCLUÍDO',
+      'a definir': 'MAPEAMENTO' // legado
     };
-    return map[e] || e;
+    return map[t.toLowerCase()] || t;
   };
 
   // Agrupa por etapa
@@ -572,6 +595,23 @@ function rMonday(el, board) {
     const e = normEtapa(c.etapa);
     if (!etapaMap[e]) etapaMap[e] = [];
     etapaMap[e].push(c);
+  }
+
+  // Dentro de cada etapa, ordena pelo Status (urgência: EM RISCO → NO PRAZO → CONCLUÍDO → sem)
+  const STATUS_ORDER = { 'EM RISCO': 0, 'ATRASADO': 0, 'NO PRAZO': 1, 'CONCLUÍDO': 2, 'CONCLUIDO': 2 };
+  for (const e in etapaMap) {
+    etapaMap[e].sort((a, b) => {
+      const sa = (a.statusGeral || '').trim().toUpperCase();
+      const sb = (b.statusGeral || '').trim().toUpperCase();
+      const oa = STATUS_ORDER[sa] ?? 3;
+      const ob = STATUS_ORDER[sb] ?? 3;
+      if (oa !== ob) return oa - ob;
+      // Empate de status: ordena por prazo (sem data por último)
+      if (a.due && b.due) return a.due.localeCompare(b.due);
+      if (a.due && !b.due) return -1;
+      if (!a.due && b.due) return 1;
+      return 0;
+    });
   }
 
   // Ordena os grupos: primeiro a ordem fixa, depois etapas não previstas, depois "Sem etapa"
@@ -590,30 +630,48 @@ function rMonday(el, board) {
 
   // Cor do badge da etapa
   const etapaBadge = (etapa) => {
+    const e = normEtapa(etapa);
     const m = {
-      'Em produção':'bb',
-      'A iniciar':'by',
-      'Aprovado':'bgg','Concluído':'bgg',
-      'Em aprovação':'bpu',
-      'Orçando':'bo',
-      'A definir':'bgr',
-      'Parado':'br'
+      'A INICIAR':'by',
+      'MAPEAMENTO':'bgr',
+      'ORÇAMENTO':'bo',
+      'EM PRODUÇÃO':'bpu',
+      'EM APROVAÇÃO':'bb',
+      'ENTREGUE':'bgg',
+      'CONCLUÍDO':'bgg',
+      'PARADO':'br'
     };
-    return `<span class="badge ${m[etapa]||'bgr'}">${etapa||'—'}</span>`;
+    return `<span class="badge ${m[e]||'bgr'}">${e}</span>`;
   };
 
-  // Cor da barra separadora pra cada etapa (combinar com badge)
+  // Cor da barra separadora pra cada etapa
   const etapaSepColor = (etapa) => {
     const m = {
-      'Em produção':'var(--bl)',
-      'A iniciar':'var(--ye)',
-      'Aprovado':'var(--gr)','Concluído':'var(--gr)',
-      'Em aprovação':'var(--pu)',
-      'Orçando':'var(--or)',
-      'A definir':'var(--t2)',
-      'Parado':'var(--red)'
+      'A INICIAR':'var(--ye)',
+      'MAPEAMENTO':'var(--t2)',
+      'ORÇAMENTO':'var(--or)',
+      'EM PRODUÇÃO':'var(--pu)',
+      'EM APROVAÇÃO':'var(--bl)',
+      'ENTREGUE':'var(--gr)',
+      'CONCLUÍDO':'var(--gr)',
+      'PARADO':'var(--red)'
     };
     return m[etapa] || bc(BF);
+  };
+
+  // Badge de Status (NO PRAZO / EM RISCO / CONCLUÍDO) — semáforo
+  const statusBadge = (status) => {
+    if (!status) return '<span class="badge bgr">—</span>';
+    const s = status.trim().toUpperCase();
+    const m = {
+      'EM RISCO': 'br',          // vermelho
+      'NO PRAZO': 'by',          // amarelo
+      'CONCLUÍDO': 'bgg',        // verde
+      'CONCLUIDO': 'bgg',
+      'ATRASADO': 'br',
+      'PARADO': 'br'
+    };
+    return `<span class="badge ${m[s]||'bgr'}">${status}</span>`;
   };
 
   el.innerHTML=`
@@ -629,12 +687,13 @@ function rMonday(el, board) {
       ${etapaNames.map(etapa=>`
         <div class="date-sep" style="color:${etapaSepColor(etapa)}">${etapa} <span style="font-size:9px;opacity:0.6">${etapaMap[etapa].length} item${etapaMap[etapa].length>1?'s':''}</span></div>
         <table><thead><tr>
-          <th>Elemento</th><th>Grupo</th><th>Artesão / Fornecedor</th><th>Prazo</th>
+          <th>Elemento</th><th>Grupo</th><th>Artesão / Fornecedor</th><th>Status</th><th>Prazo</th>
         </tr></thead><tbody>
         ${etapaMap[etapa].map(c=>`<tr class="${c.status==='today'?'row-today':c.status==='overdue'?'row-overdue':''}">
           <td style="color:var(--t);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.url?`<a href="${c.url}" target="_blank" style="color:inherit;text-decoration:none">${c.name}</a>`:c.name}</td>
           <td style="color:var(--t2);font-size:11px">${c.group||'—'}</td>
           <td style="color:var(--t2);font-size:11px">${c.artesao||'—'}</td>
+          <td>${statusBadge(c.statusGeral)}</td>
           <td>${datePill(c.due)}</td>
         </tr>`).join('')}
         </tbody></table>`).join('')}
