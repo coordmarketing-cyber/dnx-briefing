@@ -195,10 +195,35 @@ function today(){return new Date().toISOString().split('T')[0]}
 function tomorrow(){const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().split('T')[0]}
 function fd(d){if(!d)return'—';const[y,m,dd]=d.split('-');return`${dd}/${m}`}
 
-function cls(due,done){
+// Classifica urgência. Se card tem statusGeral do Monday, ele tem prioridade sobre a data:
+//   - CONCLUÍDO → 'done' (não conta como vencido, mostra como concluído)
+//   - EM RISCO → 'overdue' (entra no contador de vencidos, independente da data)
+//   - resto → comportamento normal por data
+function cls(due, done, statusGeral){
+  if (statusGeral) {
+    const s = (statusGeral || '').trim().toUpperCase();
+    if (s === 'CONCLUÍDO' || s === 'CONCLUIDO') return 'done';
+    if (s === 'EM RISCO' || s === 'ATRASADO') return 'overdue';
+  }
   if(!due)return'none';if(done)return'done';
   const t=today(),tm=tomorrow();
   if(due<t)return'overdue';if(due===t)return'today';if(due===tm)return'tomorrow';return'upcoming';
+}
+
+// Pill de data com override por statusGeral:
+//   - CONCLUÍDO → badge verde "✓ data" (mesmo que data tenha passado)
+//   - EM RISCO  → badge vermelho "Em risco · data"
+function datePillFor(due, statusGeral){
+  if (statusGeral) {
+    const s = (statusGeral || '').trim().toUpperCase();
+    if (s === 'CONCLUÍDO' || s === 'CONCLUIDO') {
+      return `<span class="date-pill dp-soon">✓ ${fd(due)}</span>`;
+    }
+    if (s === 'EM RISCO' || s === 'ATRASADO') {
+      return `<span class="date-pill dp-overdue">Em risco · ${fd(due)}</span>`;
+    }
+  }
+  return datePill(due);
 }
 
 function nurgency(due){
@@ -252,7 +277,7 @@ function cards(){
     if(BF&&b.name!==BF)continue;
     for(const c of b.cards){
       if(!personInCard(PF, c)) continue;
-      out.push({...c,board:b.name,status:cls(c.due,c.dueComplete)});
+      out.push({...c,board:b.name,status:cls(c.due,c.dueComplete,c.statusGeral)});
     }
   }
   return out;
@@ -283,7 +308,7 @@ function stats(){
   let ov=0,td=0,tm=0,ac=0,np=0,na=0;
   for(const b of BOARDS)for(const c of b.cards){
     if(!personInCard(PF, c)) continue;
-    const s=cls(c.due,c.dueComplete);
+    const s=cls(c.due,c.dueComplete,c.statusGeral);
     if(s==='overdue')ov++;if(s==='today')td++;if(s==='tomorrow')tm++;
     if(!['done','none'].includes(s))ac++;
   }
@@ -417,9 +442,9 @@ function render(){
       el.innerHTML = `
         <div class="bg2">
           ${mondayBoards.map(b => {
-            const ov = (b.cards||[]).filter(c=>cls(c.due,c.dueComplete)==='overdue').length;
-            const td = (b.cards||[]).filter(c=>cls(c.due,c.dueComplete)==='today').length;
-            const ac = (b.cards||[]).filter(c=>!['done','none'].includes(cls(c.due,c.dueComplete))).length;
+            const ov = (b.cards||[]).filter(c=>cls(c.due,c.dueComplete,c.statusGeral)==='overdue').length;
+            const td = (b.cards||[]).filter(c=>cls(c.due,c.dueComplete,c.statusGeral)==='today').length;
+            const ac = (b.cards||[]).filter(c=>!['done','none'].includes(cls(c.due,c.dueComplete,c.statusGeral))).length;
             return `<div class="bc" onclick="fBoard('${b.name.replace(/'/g,"\\'")}')">
               <div class="bcn"><span class="dot" style="background:${bc(b.name)}"></span>${sn(b.name)} <span style="font-size:9px;color:var(--t3);margin-left:4px">via Monday</span></div>
               <div class="bcs">
@@ -488,9 +513,9 @@ function rDash(el){
 <div class="sh"><div class="st">Boards Trello</div><div class="sl"></div></div>
 <div class="bg2">
   ${BOARDS.map(b=>{
-    const ov=b.cards.filter(c=>cls(c.due,c.dueComplete)==='overdue').length;
-    const td=b.cards.filter(c=>cls(c.due,c.dueComplete)==='today').length;
-    const ac=b.cards.filter(c=>!['done','none'].includes(cls(c.due,c.dueComplete))).length;
+    const ov=b.cards.filter(c=>cls(c.due,c.dueComplete,c.statusGeral)==='overdue').length;
+    const td=b.cards.filter(c=>cls(c.due,c.dueComplete,c.statusGeral)==='today').length;
+    const ac=b.cards.filter(c=>!['done','none'].includes(cls(c.due,c.dueComplete,c.statusGeral))).length;
     return`<div class="bc" onclick="fBoard('${b.name.replace(/'/g,"\\'")}')">
       <div class="bcn"><span class="dot" style="background:${bc(b.name)}"></span>${sn(b.name)}</div>
       <div class="bcs">
@@ -545,7 +570,7 @@ function rMonday(el, board) {
   // Cards filtrados por pessoa (se houver)
   let allCards = (board.cards || [])
     .filter(c => personInCard(PF, c))
-    .map(c => ({...c, status: cls(c.due, c.dueComplete)}));
+    .map(c => ({...c, status: cls(c.due, c.dueComplete, c.statusGeral)}));
 
   // Aplica filtro de tempo (TF)
   if (TF==='overdue') allCards = allCards.filter(c=>c.status==='overdue');
@@ -694,7 +719,7 @@ function rMonday(el, board) {
           <td style="color:var(--t2);font-size:11px">${c.group||'—'}</td>
           <td style="color:var(--t2);font-size:11px">${c.artesao||'—'}</td>
           <td>${statusBadge(c.statusGeral)}</td>
-          <td>${datePill(c.due)}</td>
+          <td>${datePillFor(c.due, c.statusGeral)}</td>
         </tr>`).join('')}
         </tbody></table>`).join('')}
     </div>`:'<div class="empty"><h3>Nenhum card</h3></div>'}`;
