@@ -140,7 +140,8 @@ tr.row-overdue td{background:rgba(224,85,85,0.04)}
     <div class="ni" onclick="nav('notion',this)"><span class="dot" style="background:var(--pu)"></span>Notion — Conteúdo</div>
     <div class="ni" onclick="nav('trello',this)"><span class="dot" style="background:var(--bl)"></span>Trello — Boards</div>
     <div class="ni" onclick="nav('monday',this)"><span class="dot" style="background:var(--te)"></span>Monday — Boards</div>
-    <div class="ni" onclick="nav('performance',this)"><span class="dot" style="background:var(--or)"></span>Performance</div>
+    <div class="ni" onclick="nav('performance',this)"><span class="dot" style="background:var(--or)"></span>Performance — Vigente</div>
+    <div class="ni" onclick="nav('historico-mensal',this)"><span class="dot" style="background:var(--ye)"></span>Performance — Histórico</div>
     <div class="sb-sec" style="margin-top:6px">Projetos</div>
     <div class="ni" onclick="fBoard('Marca Pablo',this)"><span class="dot" style="background:#a57bc4"></span>Marca Pablo</div>
     <div class="ni" onclick="fBoard('DNX HOTELARIA - Projeto Ohana',this)"><span class="dot" style="background:#3d9488"></span>Ohana</div>
@@ -184,6 +185,7 @@ let BOARDS = [];   // dados do Trello (vem da /api/trello)
 let NOTION = [];   // dados do Notion (vem da /api/notion)
 let V='dashboard',BF=null,NF=null,PF=null,TF='active',NTF='date';
 let METRICAS = null; // Dados de performance (Meta Ads + RD Station + Leads) — vem de /metricas.json
+let METRICAS_MENSAL = null; // Dados consolidados mensais — vem de /metricas-mensal.json
 let LOADING = false;
 let LAST_ERROR = null;
 
@@ -347,11 +349,12 @@ async function loadData(){
 
   try {
     // Busca Trello, Notion, Monday e Métricas (Performance) em paralelo
-    const [trelloRes, notionRes, mondayRes, metricasRes] = await Promise.all([
+    const [trelloRes, notionRes, mondayRes, metricasRes, metricasMensalRes] = await Promise.all([
       fetch('/api/trello').then(r => r.json().then(d => ({ok: r.ok, data: d, status: r.status}))),
       fetch('/api/notion').then(r => r.json().then(d => ({ok: r.ok, data: d, status: r.status}))),
       fetch('/api/monday').then(r => r.json().then(d => ({ok: r.ok, data: d, status: r.status}))),
-      fetch('/metricas.json?_=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null)
+      fetch('/metricas.json?_=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/metricas-mensal.json?_=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null)
     ]);
 
     const errors = [];
@@ -370,6 +373,7 @@ async function loadData(){
     BOARDS = [...trelloBoards, ...mondayBoards];
     NOTION = notionRes.ok ? notionRes.data : [];
     METRICAS = metricasRes || null;
+    METRICAS_MENSAL = metricasMensalRes || null;
 
     // Contagens
     let totalCards = 0;
@@ -407,7 +411,7 @@ function nav(view,el){
   V=view;BF=null;NF=null;PF=null;
   document.querySelectorAll('.ni').forEach(i=>i.classList.remove('on'));
   if(el)el.classList.add('on');
-  document.getElementById('ttl').textContent={dashboard:'Dashboard',notion:'Notion — Conteúdo',trello:'Trello — Boards',monday:'Monday — Boards',performance:'Performance'}[view]||view;
+  document.getElementById('ttl').textContent={dashboard:'Dashboard',notion:'Notion — Conteúdo',trello:'Trello — Boards',monday:'Monday — Boards',performance:'Performance — Vigente','historico-mensal':'Performance — Histórico Mensal'}[view]||view;
   render();
 }
 function fBoard(n,el){BF=n;NF=null;PF=null;TF='active';V='trello';document.querySelectorAll('.ni').forEach(i=>i.classList.remove('on'));if(el)el.classList.add('on');document.getElementById('ttl').textContent=sn(n);render()}
@@ -462,6 +466,7 @@ function render(){
     }
   }
   else if(V==='performance') rPerformance(el);
+  else if(V==='historico-mensal') rHistoricoMensal(el);
 }
 
 // ── DASHBOARD ──
@@ -726,6 +731,107 @@ function rPerformance(el){
   ${chartHTML}
 </div>
 `;
+}
+
+
+function rHistoricoMensal(el){
+  if(!METRICAS_MENSAL||!METRICAS_MENSAL.fechamentos||!METRICAS_MENSAL.fechamentos.length){
+    el.innerHTML = `<div class="empty"><h3>Sem dados de histórico mensal ainda</h3><p style="font-size:11px;color:var(--t3);margin-top:6px">Adicione fechamentos em <code>/metricas-mensal.json</code> no GitHub.</p></div>`;
+    return;
+  }
+
+  // Ordena por data (mais recente primeiro)
+  const fechamentos = [...METRICAS_MENSAL.fechamentos].sort((a,b) => (b.mes||'').localeCompare(a.mes||''));
+
+  // Renderiza tabela consolidada
+  const tabelaConsolidada = fechamentos.map(f => `
+    <tr>
+      <td style="color:var(--t);font-weight:500">${f.label}</td>
+      <td style="text-align:right;color:var(--t2)">${fmtNum(f.consolidado?.leads?.total||0)}</td>
+      <td style="text-align:right;color:var(--t2)">${fmtNum(f.consolidado?.leads?.trafegoPago||0)}</td>
+      <td style="text-align:right;color:var(--t2)">${fmtNum(f.consolidado?.leads?.organico||0)}</td>
+      <td style="text-align:right;color:var(--t2)">${fmtNum(f.consolidado?.funil?.volume||0)}</td>
+      <td style="text-align:right;color:${f.consolidado?.funil?.taxa_conversao>0?'var(--gr)':'var(--t3)'}">${f.consolidado?.funil?.taxa_conversao!==null?fmtPct(f.consolidado?.funil?.taxa_conversao):'—'}</td>
+      <td style="text-align:right;color:var(--t)">${fmtBRL(f.consolidado?.vendas?.receita||0)}</td>
+      <td style="text-align:right;color:var(--t2)">${fmtBRL(f.consolidado?.investimento?.total||0)}</td>
+    </tr>
+  `).join('');
+
+  // Abas de marcas (por período)
+  const abasHTML = fechamentos.map((f,idx) => {
+    const descon = f.marcas?.desconexo || {};
+    const desco = f.marcas?.desco || {};
+    const hotelaria = f.marcas?.dnxHotelaria || {};
+
+    const cardMarca = (marca, dados, cor) => {
+      const lQ = dados.funil?.volume||0;
+      const lC = dados.leads?.total||0;
+      const tx = dados.funil?.taxa_conversao;
+      return `
+        <div style="background:var(--s);border:1px solid var(--b);border-radius:var(--rl);padding:14px;margin-bottom:8px">
+          <div style="font-size:11px;font-weight:600;color:var(--t);margin-bottom:8px">${marca}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">
+            <div><span style="color:var(--t3)">Leads chegaram:</span><br><span style="color:var(--t);font-weight:500">${fmtNum(lC)}</span></div>
+            <div><span style="color:var(--t3)">Qualificados:</span><br><span style="color:var(--t);font-weight:500">${fmtNum(lQ)}</span></div>
+            <div><span style="color:var(--t3)">Taxa conversão:</span><br><span style="color:${tx>0?'var(--gr)':'var(--t3)'};font-weight:500">${tx!==null&&tx!==undefined?fmtPct(tx):'—'}</span></div>
+            <div><span style="color:var(--t3)">Receita:</span><br><span style="color:var(--t);font-weight:500">${fmtBRL(dados.vendas?.receita||0)}</span></div>
+          </div>
+        </div>
+      `;
+    };
+
+    return `
+      <div style="display:${idx===0?'block':'none'}" id="aba-${f.mes}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div>
+            <div style="font-size:11px;color:var(--t3)">Período</div>
+            <div style="font-family:'Syne',sans-serif;font-size:14px;color:var(--ac)">${f.periodo||f.label}</div>
+          </div>
+        </div>
+        <div class="sh"><div class="st" style="color:var(--or)">Desconexo Design</div><div class="sl"></div></div>
+        ${cardMarca('Desconexo', descon, 'var(--red)')}
+        <div class="sh"><div class="st" style="color:var(--or)">DESCO</div><div class="sl"></div></div>
+        ${cardMarca('DESCO', desco, 'var(--or)')}
+        <div class="sh"><div class="st" style="color:var(--bl)">DNX Hotelaria</div><div class="sl"></div></div>
+        ${cardMarca('DNX Hotelaria', hotelaria, 'var(--bl)')}
+        
+        <div class="sh" style="margin-top:18px"><div class="st" style="color:var(--ye)">Consolidado</div><div class="sl"></div></div>
+        <div style="background:var(--s);border:1px solid var(--b);border-radius:var(--rl);padding:14px;margin-bottom:18px">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:11px">
+            <div><span style="color:var(--t3)">Leads chegaram:</span><br><span style="color:var(--t);font-weight:500;font-size:13px">${fmtNum(f.consolidado?.leads?.total||0)}</span></div>
+            <div><span style="color:var(--t3)">Qualificados:</span><br><span style="color:var(--t);font-weight:500;font-size:13px">${fmtNum(f.consolidado?.funil?.volume||0)}</span></div>
+            <div><span style="color:var(--t3)">Taxa conversão:</span><br><span style="color:${f.consolidado?.funil?.taxa_conversao>0?'var(--gr)':'var(--t3)'};font-weight:500;font-size:13px">${f.consolidado?.funil?.taxa_conversao!==null?fmtPct(f.consolidado?.funil?.taxa_conversao):'—'}</span></div>
+            <div><span style="color:var(--t3)">Receita:</span><br><span style="color:var(--t);font-weight:500;font-size:13px">${fmtBRL(f.consolidado?.vendas?.receita||0)}</span></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+      ${fechamentos.map((f,idx) => `<button class="fb ${idx===0?'on':''}" onclick="document.querySelectorAll('[id^=aba-]').forEach(e=>e.style.display='none');document.getElementById('aba-${f.mes}').style.display='block';document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));event.target.classList.add('on')">${f.label}</button>`).join('')}
+    </div>
+
+    ${abasHTML}
+
+    <div class="sh" style="margin-top:24px"><div class="st" style="color:var(--ac)">Comparativo — Todos os períodos</div><div class="sl"></div></div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>Período</th>
+          <th style="text-align:right">Leads chegaram</th>
+          <th style="text-align:right">Tráfego pago</th>
+          <th style="text-align:right">Orgânico</th>
+          <th style="text-align:right">Qualificados</th>
+          <th style="text-align:right">Taxa conversão</th>
+          <th style="text-align:right">Receita</th>
+          <th style="text-align:right">Investimento</th>
+        </tr></thead>
+        <tbody>${tabelaConsolidada}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 
