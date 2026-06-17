@@ -155,11 +155,11 @@
             "total": 721
           },
           "funil": {
-            "volume": 36,
-            "taxa_conversao": 16.67
+            "volume": 49,
+            "taxa_conversao": 14.29
           },
           "vendas": {
-            "geradas": 6,
+            "geradas": 7,
             "receita": 118075.94
           }
         },
@@ -245,11 +245,11 @@
           "total": 721
         },
         "funil": {
-          "volume": 36,
-          "taxa_conversao": 16.67
+          "volume": 49,
+          "taxa_conversao": 14.29
         },
         "vendas": {
-          "geradas": 6,
+          "geradas": 7,
           "receita": 118075.94
         }
       }
