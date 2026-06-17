@@ -1,0 +1,104 @@
+{
+  "_instrucoes": "Histórico de performance. Adicionar novos snapshots ao array 'snapshots' sempre que houver atualização. O gráfico de tendência sempre mostra os ÚLTIMOS 7 SNAPSHOTS.",
+  "snapshots": [
+    {
+      "data": "2026-06-07",
+      "periodo": "01/06 — 15/06",
+      "metaAds": {
+        "marca": "Desconexo",
+        "conta": "CA - Desconexo",
+        "investimento": 352.48,
+        "ctr": 1.25,
+        "impressoes": 8218,
+        "alcance": 3234,
+        "conversasIniciadas": 28,
+        "custoConversa": 12.59,
+        "cpc": 3.42,
+        "cliques": 191,
+        "cliquesLink": 103
+      },
+      "rdStation": {
+        "campanhas": [
+          {
+            "nome": "[DNX HOTELARIA] Posicionamento Pablo – Prospect",
+            "marca": "DNX Hotelaria",
+            "data": "2026-06-10 18:07",
+            "selecionados": 133,
+            "abertura": 26.04,
+            "cliques": 0.00,
+            "bounces": 27.82,
+            "spam": 0.00,
+            "descadastros": 0.00
+          },
+          {
+            "nome": "[DNX HOTELARIA] Posicionamento Pablo – MAPEADOS SEM ESTÁ NO FUNIL",
+            "marca": "DNX Hotelaria",
+            "data": "2026-06-10 12:34",
+            "selecionados": 41,
+            "abertura": 60.98,
+            "cliques": 0.00,
+            "bounces": 0.00,
+            "spam": 0.00,
+            "descadastros": 0.00
+          },
+          {
+            "nome": "[DNX HOTELARIA] Posicionamento Pablo – BASE FUNIL",
+            "marca": "DNX Hotelaria",
+            "data": "2026-06-10 12:26",
+            "selecionados": 286,
+            "abertura": 57.39,
+            "cliques": 2.11,
+            "bounces": 0.70,
+            "spam": 0.00,
+            "descadastros": 0.00
+          },
+          {
+            "nome": "[DESCONEXO] – Campanha Pronta entrega – Disparo 01",
+            "marca": "Desconexo",
+            "data": "2026-06-10 08:00",
+            "selecionados": 3316,
+            "abertura": 26.56,
+            "cliques": 0.12,
+            "bounces": 2.59,
+            "spam": 0.00,
+            "descadastros": 0.00
+          },
+          {
+            "nome": "[DESCO MÓVEIS] – hiperpersonalização – 01",
+            "marca": "Desco",
+            "data": "2026-06-09 13:29",
+            "selecionados": 1095,
+            "abertura": 37.95,
+            "cliques": 0.74,
+            "bounces": 1.10,
+            "spam": 0.00,
+            "descadastros": 0.00
+          },
+          {
+            "nome": "[DESCONEXO] – Poltrona Jangada – Disparo Estratégico",
+            "marca": "Desconexo",
+            "data": "2026-06-09 11:39",
+            "selecionados": 4,
+            "abertura": 50.00,
+            "cliques": 25.00,
+            "bounces": 0.00,
+            "spam": 0.00,
+            "descadastros": 0.00
+          }
+        ]
+      },
+      "leads": {
+        "trafegoPago": {
+          "Desconexo": 7,
+          "Desco": 0,
+          "DNX Hotelaria": 0
+        },
+        "organico": {
+          "Desconexo": 0,
+          "Desco": 1,
+          "DNX Hotelaria": 0
+        }
+      }
+    }
+  ]
+}
