@@ -8,8 +8,7 @@
         "desconexo": {
           "investimento": {
             "anuncios": 602.02,
-            "ativacoes": 21804.00,
-            "total": 22406.02
+            "ativacoes": 21804.00
           },
           "metaAds": {
             "cliques": null,
@@ -105,8 +104,7 @@
       "consolidado": {
         "investimento": {
           "anuncios": 602.02,
-          "ativacoes": 21804.00,
-          "total": 22406.02
+          "ativacoes": 21804.00
         },
         "rdStation": {
           "campanhas": 15,
@@ -137,8 +135,7 @@
         "desconexo": {
           "investimento": {
             "anuncios": 1199.78,
-            "ativacoes": null,
-            "total": 1199.78
+            "ativacoes": null
           },
           "metaAds": {
             "cliques": 2031,
@@ -234,8 +231,7 @@
       "consolidado": {
         "investimento": {
           "anuncios": 1199.78,
-          "ativacoes": null,
-          "total": 1199.78
+          "ativacoes": null
         },
         "rdStation": {
           "campanhas": 18,
