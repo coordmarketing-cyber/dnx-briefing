@@ -753,7 +753,7 @@ function rHistoricoMensal(el){
       <td style="text-align:right;color:var(--t2)">${fmtNum(f.consolidado?.funil?.volume||0)}</td>
       <td style="text-align:right;color:${f.consolidado?.funil?.taxa_conversao>0?'var(--gr)':'var(--t3)'}">${f.consolidado?.funil?.taxa_conversao!==null?fmtPct(f.consolidado?.funil?.taxa_conversao):'—'}</td>
       <td style="text-align:right;color:var(--t)">${fmtBRL(f.consolidado?.vendas?.receita||0)}</td>
-      <td style="text-align:right;color:var(--t2)">${fmtBRL(f.consolidado?.investimento?.total||0)}</td>
+      <td style="text-align:right;color:var(--t)">${fmtBRL((f.consolidado?.investimento?.anuncios||0) + (f.consolidado?.investimento?.ativacoes||0))}</td>
     </tr>
   `).join('');
 
