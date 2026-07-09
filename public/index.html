@@ -182,7 +182,7 @@ tr.row-overdue td{background:rgba(224,85,85,0.04)}
 // ====== ESTADO ======
 let BOARDS = [];   // dados do Trello (vem da /api/trello)
 let NOTION = [];   // dados do Notion (vem da /api/notion)
-let V='dashboard',BF=null,NF=null,PF=null,TF='active',NTF='date',PA='mes-atual';
+let V='dashboard',BF=null,NF=null,PF=null,TF='active',NTF='date',PA='emails';
 let METRICAS = null; // Dados de performance (Meta Ads + RD Station + Leads) — vem de /metricas.json
 let METRICAS_MENSAL = null; // Fechamentos mensais consolidados — vem de /metricas-mensal.json
 let LOADING = false;
@@ -543,42 +543,47 @@ function fmtNum(n){if(n===null||n===undefined||isNaN(n))return'—';return Numbe
 function fmtPct(n){if(n===null||n===undefined||isNaN(n))return'—';return Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%'}
 function fmtData(s){if(!s)return'—';const[y,m,d]=s.split('-');return`${d}/${m}`}
 
-function lastSnapshot(){
-  if(!METRICAS||!METRICAS.snapshots||!METRICAS.snapshots.length)return null;
-  // Ordena por data e pega o mais recente
-  const sorted=[...METRICAS.snapshots].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
-  return sorted[0];
-}
-function last7Snapshots(){
-  if(!METRICAS||!METRICAS.snapshots||!METRICAS.snapshots.length)return [];
-  const sorted=[...METRICAS.snapshots].sort((a,b)=>(a.data||'').localeCompare(b.data||''));
-  return sorted.slice(-7);
-}
-
-// Resumo compacto pro dashboard
+// Resumo compacto pro dashboard (baseado nos disparos de email)
 function perfSummaryDash(){
-  const s=lastSnapshot();
-  if(!s)return '';
-  const ma=s.metaAds||{};
-  const leads=s.leads||{};
-  const totalTrafego=Object.values(leads.trafegoPago||{}).reduce((a,b)=>a+b,0);
-  const totalOrganico=Object.values(leads.organico||{}).reduce((a,b)=>a+b,0);
-  const totalLeads=totalTrafego+totalOrganico;
-  const totalEnviados=(s.rdStation?.campanhas||[]).reduce((a,c)=>a+(c.selecionados||0),0);
-  const abMedia=(s.rdStation?.campanhas||[]).length
-    ? (s.rdStation.campanhas.reduce((a,c)=>a+(c.selecionados||0)*(c.abertura||0),0))/(totalEnviados||1)
-    : 0;
+  if(!METRICAS || !METRICAS.disparos || !METRICAS.disparos.length) return '';
+
+  const disparos = METRICAS.disparos;
+
+  // Semana mais recente
+  const semanas = [...new Set(disparos.map(d => d.semanaInicio))].sort().reverse();
+  const semanaRecente = semanas[0];
+  const disparosRecentes = disparos.filter(d => d.semanaInicio === semanaRecente);
+  const semanaLabel = disparosRecentes[0]?.semanaLabel || '';
+
+  // Totais da semana mais recente
+  const enviadosSemana = disparosRecentes.reduce((s, d) => s + d.selecionados, 0);
+  const entreguesSemana = disparosRecentes.reduce((s, d) => s + d.entregues, 0);
+  const aberturasSemana = disparosRecentes.reduce((s, d) => s + d.aberturas, 0);
+  const cliquesSemana = disparosRecentes.reduce((s, d) => s + d.cliques, 0);
+  const abertMedia = entreguesSemana ? (aberturasSemana / entreguesSemana * 100) : 0;
+  const cliqueMedia = entreguesSemana ? (cliquesSemana / entreguesSemana * 100) : 0;
+
+  // Contagem por marca na semana
+  const porMarca = {};
+  for (const d of disparosRecentes) {
+    porMarca[d.marca] = (porMarca[d.marca] || 0) + 1;
+  }
+  const marcasTxt = Object.entries(porMarca).map(([m, n]) => `${m.replace('DNX Hotelaria','Hotelaria')}: ${n}`).join(' · ');
+
+  // Totais do período inteiro
+  const totalDisparos = disparos.length;
+  const totalEnviados = disparos.reduce((s, d) => s + d.selecionados, 0);
 
   return `
-<div class="sh" style="margin-top:18px"><div class="st" style="color:var(--or)">Performance · ${s.periodo||fmtData(s.data)}</div><div class="sl"></div>
-  <a style="font-size:10px;color:var(--or);cursor:pointer" onclick="nav('performance');document.querySelectorAll('.ni').forEach(i=>i.classList.remove('on'));Array.from(document.querySelectorAll('.ni')).find(n=>n.textContent.trim()==='Performance')?.classList.add('on')">Ver detalhes →</a>
+<div class="sh"><div class="st" style="color:var(--te)">Emails MKT · ${semanaLabel}</div><div class="sl"></div>
+  <a style="font-size:10px;color:var(--te);cursor:pointer" onclick="nav('performance');document.querySelectorAll('.ni').forEach(i=>i.classList.remove('on'));Array.from(document.querySelectorAll('.ni')).find(n=>n.textContent.trim()==='Performance')?.classList.add('on')">Ver detalhes →</a>
 </div>
 <div class="sg">
-  <div class="sc" style="--cc:var(--or)"><div class="sl2">Investido (Meta)</div><div class="sv" style="color:var(--or)">${fmtBRL(ma.investimento)}</div><div class="ss">Desconexo</div></div>
-  <div class="sc" style="--cc:var(--bl)"><div class="sl2">Conversas iniciadas</div><div class="sv" style="color:var(--bl)">${fmtNum(ma.conversasIniciadas)}</div><div class="ss">${fmtBRL(ma.custoConversa)} cada</div></div>
-  <div class="sc" style="--cc:var(--pu)"><div class="sl2">Leads no período</div><div class="sv" style="color:var(--pu)">${totalLeads}</div><div class="ss">${totalTrafego} pagos · ${totalOrganico} orgânicos</div></div>
-  <div class="sc" style="--cc:var(--te)"><div class="sl2">E-mails enviados</div><div class="sv" style="color:var(--te)">${fmtNum(totalEnviados)}</div><div class="ss">${(s.rdStation?.campanhas||[]).length} campanhas</div></div>
-  <div class="sc" style="--cc:var(--gr)"><div class="sl2">Abertura média</div><div class="sv" style="color:var(--gr)">${fmtPct(abMedia)}</div><div class="ss">Ponderada por envio</div></div>
+  <div class="sc" style="--cc:var(--te)"><div class="sl2">Disparos na semana</div><div class="sv" style="color:var(--te)">${disparosRecentes.length}</div><div class="ss">${marcasTxt}</div></div>
+  <div class="sc" style="--cc:var(--bl)"><div class="sl2">Enviados</div><div class="sv" style="color:var(--bl)">${fmtNum(enviadosSemana)}</div><div class="ss">Semana</div></div>
+  <div class="sc" style="--cc:var(--gr)"><div class="sl2">Abertura média</div><div class="sv" style="color:var(--gr)">${fmtPct(abertMedia)}</div><div class="ss">Ponderada</div></div>
+  <div class="sc" style="--cc:var(--pu)"><div class="sl2">Cliques médios</div><div class="sv" style="color:var(--pu)">${fmtPct(cliqueMedia)}</div><div class="ss">Ponderada</div></div>
+  <div class="sc" style="--cc:var(--ac)"><div class="sl2">Total do período</div><div class="sv" style="color:var(--ac)">${fmtNum(totalDisparos)}</div><div class="ss">${fmtNum(totalEnviados)} enviados</div></div>
 </div>`;
 }
 
@@ -587,7 +592,7 @@ function perfSummaryDash(){
 function rPerformance(el){
   const tabs = `
     <div class="frow" style="margin-bottom:14px">
-      <button class="fb ${PA==='mes-atual'?'on':''}" onclick="PA='mes-atual';render()">Mês atual</button>
+      <button class="fb ${PA==='emails'?'on':''}" onclick="PA='emails';render()">Emails MKT</button>
       <button class="fb ${PA==='historico'?'on':''}" onclick="PA='historico';render()">Histórico mensal</button>
     </div>`;
 
@@ -596,154 +601,243 @@ function rPerformance(el){
   const content = document.getElementById('perf-content');
 
   if (PA === 'historico') return rPerformanceHistorico(content);
-  return rPerformanceMesAtual(content);
+  return rPerformanceEmailsMKT(content);
 }
 
-// ── PERFORMANCE — Mês atual (Meta Ads + RD Station + Leads da quinzena) ──
-function rPerformanceMesAtual(el){
-  if(!METRICAS||!METRICAS.snapshots||!METRICAS.snapshots.length){
-    el.innerHTML = `<div class="empty"><h3>Sem dados de performance ainda</h3><p style="font-size:11px;color:var(--t3);margin-top:6px">Adicione snapshots em <code>/metricas.json</code> no GitHub.</p></div>`;
+// ── PERFORMANCE — Emails MKT (RD Station, dados semanais por marca) ──
+function rPerformanceEmailsMKT(el){
+  if(!METRICAS || !METRICAS.disparos || !METRICAS.disparos.length){
+    el.innerHTML = `<div class="empty"><h3>Sem dados de emails ainda</h3><p style="font-size:11px;color:var(--t3);margin-top:6px">Adicione disparos em <code>/metricas.json</code> no GitHub.</p></div>`;
     return;
   }
 
-  const s = lastSnapshot();
-  const ma = s.metaAds || {};
-  const rd = s.rdStation || {campanhas:[]};
-  const leads = s.leads || {trafegoPago:{}, organico:{}};
-  const hist = last7Snapshots();
+  const disparos = METRICAS.disparos;
 
-  // Totais leads
-  const tpDescon = (leads.trafegoPago||{})['Desconexo']||0;
-  const tpDesco = (leads.trafegoPago||{})['Desco']||0;
-  const tpHotelaria = (leads.trafegoPago||{})['DNX Hotelaria']||0;
-  const orgDescon = (leads.organico||{})['Desconexo']||0;
-  const orgDesco = (leads.organico||{})['Desco']||0;
-  const orgHotelaria = (leads.organico||{})['DNX Hotelaria']||0;
-  const totalPagos = tpDescon+tpDesco+tpHotelaria;
-  const totalOrgan = orgDescon+orgDesco+orgHotelaria;
-  const totalLeads = totalPagos+totalOrgan;
-
-  // Totais RD
-  const totalEnviados = rd.campanhas.reduce((a,c)=>a+(c.selecionados||0),0);
-  const abMedia = totalEnviados ? rd.campanhas.reduce((a,c)=>a+(c.selecionados||0)*(c.abertura||0),0)/totalEnviados : 0;
-  const clMedia = totalEnviados ? rd.campanhas.reduce((a,c)=>a+(c.selecionados||0)*(c.cliques||0),0)/totalEnviados : 0;
-
-  // Gráfico de linhas (SVG) — Investimento, Conversas, Leads ao longo dos snapshots
-  const chartHTML = (() => {
-    if(hist.length < 2){
-      return `<div class="empty" style="padding:18px;font-size:11px"><p>Adicione mais snapshots em <code>metricas.json</code> para ver a tendência (mínimo 2).</p></div>`;
+  // Agrupa por semana + marca
+  const grupos = {};
+  for (const d of disparos) {
+    const key = d.semanaInicio + '|' + d.marca;
+    if (!grupos[key]) {
+      grupos[key] = {
+        semanaInicio: d.semanaInicio,
+        semanaFim: d.semanaFim,
+        semanaLabel: d.semanaLabel,
+        marca: d.marca,
+        disparos: [],
+        totalSelecionados: 0,
+        totalEntregues: 0,
+        totalAberturas: 0,
+        totalCliques: 0
+      };
     }
-    const W = 720, H = 200, PAD_L = 40, PAD_R = 12, PAD_T = 16, PAD_B = 36;
+    grupos[key].disparos.push(d);
+    grupos[key].totalSelecionados += d.selecionados;
+    grupos[key].totalEntregues += d.entregues;
+    grupos[key].totalAberturas += d.aberturas;
+    grupos[key].totalCliques += d.cliques;
+  }
+
+  // Calcula taxas ponderadas de cada grupo
+  for (const k in grupos) {
+    const g = grupos[k];
+    g.abertMedia = g.totalEntregues ? (g.totalAberturas / g.totalEntregues * 100) : 0;
+    g.cliqueMedia = g.totalEntregues ? (g.totalCliques / g.totalEntregues * 100) : 0;
+  }
+
+  const gruposArr = Object.values(grupos);
+
+  // Semana mais recente com dados
+  const semanasOrdenadas = [...new Set(gruposArr.map(g => g.semanaInicio))].sort().reverse();
+  const semanaRecente = semanasOrdenadas[0];
+  const semanaLabelRecente = gruposArr.find(g => g.semanaInicio === semanaRecente)?.semanaLabel || '';
+
+  // Grupos da semana mais recente (por marca)
+  const gruposSemanaRecente = gruposArr
+    .filter(g => g.semanaInicio === semanaRecente)
+    .sort((a, b) => {
+      const ordem = { 'Desconexo': 0, 'Desco': 1, 'DNX Hotelaria': 2 };
+      return (ordem[a.marca] ?? 99) - (ordem[b.marca] ?? 99);
+    });
+
+  // Totais gerais do período
+  const totalDisparos = disparos.length;
+  const totalEnviados = disparos.reduce((s, d) => s + d.selecionados, 0);
+  const totalEntregues = disparos.reduce((s, d) => s + d.entregues, 0);
+  const totalAberturas = disparos.reduce((s, d) => s + d.aberturas, 0);
+  const totalCliques = disparos.reduce((s, d) => s + d.cliques, 0);
+  const abertMediaGeral = totalEntregues ? (totalAberturas / totalEntregues * 100) : 0;
+  const cliqueMediaGeral = totalEntregues ? (totalCliques / totalEntregues * 100) : 0;
+
+  // Cor por marca
+  const corMarca = (m) => ({
+    'Desconexo': 'var(--red)',
+    'Desco': 'var(--or)',
+    'DNX Hotelaria': 'var(--bl)'
+  })[m] || 'var(--t2)';
+
+  const badgeMarca = (m) => {
+    const c = ({ 'Desconexo': 'br', 'Desco': 'bo', 'DNX Hotelaria': 'bb' })[m] || 'bgr';
+    return `<span class="badge ${c}">${m}</span>`;
+  };
+
+  // Cabeçalho com totais do período
+  const headerHTML = `
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+      <div>
+        <div style="font-size:11px;color:var(--t3)">Período</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;color:var(--ac)">${METRICAS.periodo || '—'}</div>
+      </div>
+      <div style="font-size:10px;color:var(--t3);text-align:right">
+        <b style="color:var(--t2)">${fmtNum(totalDisparos)}</b> disparos ·
+        <b style="color:var(--t2)">${fmtNum(totalEnviados)}</b> enviados<br>
+        Abertura média: <b style="color:var(--gr)">${fmtPct(abertMediaGeral)}</b> ·
+        Cliques: <b style="color:var(--bl)">${fmtPct(cliqueMediaGeral)}</b>
+      </div>
+    </div>`;
+
+  // Cards por marca (semana mais recente)
+  const cardsHTML = `
+    <div class="sh"><div class="st" style="color:var(--te)">Semana em destaque · ${semanaLabelRecente}</div><div class="sl"></div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;margin-bottom:18px">
+      ${gruposSemanaRecente.map(g => `
+        <div class="pan" style="border-top:2px solid ${corMarca(g.marca)}">
+          <div class="ph" style="background:transparent;border-bottom:1px solid var(--b)">
+            <div class="pt" style="color:${corMarca(g.marca)}">${g.marca}</div>
+            <div style="font-size:9px;color:var(--t3)">${g.disparos.length} disparo${g.disparos.length>1?'s':''} · ${fmtNum(g.totalSelecionados)} enviados</div>
+          </div>
+          <div class="pb">
+            ${g.disparos.map(d => `
+              <div class="row" style="flex-direction:column;align-items:flex-start;gap:2px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;width:100%;gap:6px">
+                  <div class="rn" style="font-size:11px">${d.nome}</div>
+                  <div style="font-size:9px;color:var(--t3);white-space:nowrap">${fmtData(d.data)} · ${d.hora||''}</div>
+                </div>
+                <div style="font-size:10px;color:var(--t3);display:flex;gap:10px">
+                  <span>${fmtNum(d.selecionados)} enviados</span>
+                  <span style="color:${d.taxaAbertura>=40?'var(--gr)':d.taxaAbertura>=25?'var(--ye)':'var(--red)'}">Abertura ${fmtPct(d.taxaAbertura)}</span>
+                  <span style="color:${d.taxaClique>=1?'var(--gr)':d.taxaClique>=0.3?'var(--ye)':'var(--t3)'}">Cliques ${fmtPct(d.taxaClique)}</span>
+                </div>
+              </div>`).join('')}
+          </div>
+          <div style="padding:8px 13px;background:var(--s2);border-top:1px solid var(--b);font-size:10px;color:var(--t2)">
+            Consolidado: <b style="color:var(--gr)">${fmtPct(g.abertMedia)}</b> abertura · <b style="color:var(--bl)">${fmtPct(g.cliqueMedia)}</b> cliques
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  // Tabela histórica (todas as semanas x marcas, ordenadas do mais recente pro mais antigo)
+  const gruposOrdenados = [...gruposArr].sort((a, b) => {
+    if (a.semanaInicio !== b.semanaInicio) return b.semanaInicio.localeCompare(a.semanaInicio);
+    const ordem = { 'Desconexo': 0, 'Desco': 1, 'DNX Hotelaria': 2 };
+    return (ordem[a.marca] ?? 99) - (ordem[b.marca] ?? 99);
+  });
+
+  const tabelaHTML = `
+    <div class="sh"><div class="st" style="color:var(--ac)">Histórico semanal</div><div class="sl"></div></div>
+    <div class="tw" style="margin-bottom:18px">
+      <table><thead><tr>
+        <th>Semana</th><th>Marca</th>
+        <th style="text-align:right">Disparos</th>
+        <th style="text-align:right">Enviados</th>
+        <th style="text-align:right">Abertura</th>
+        <th style="text-align:right">Cliques</th>
+      </tr></thead><tbody>
+        ${gruposOrdenados.map(g => {
+          const destaque = g.semanaInicio === semanaRecente;
+          return `<tr${destaque ? ' style="background:rgba(200,184,154,0.04)"' : ''}>
+            <td style="color:${destaque?'var(--ac)':'var(--t)'}">${g.semanaLabel}${destaque?' ✨':''}</td>
+            <td>${badgeMarca(g.marca)}</td>
+            <td style="text-align:right;color:var(--t2)">${g.disparos.length}</td>
+            <td style="text-align:right;color:var(--t)">${fmtNum(g.totalSelecionados)}</td>
+            <td style="text-align:right;color:${g.abertMedia>=40?'var(--gr)':g.abertMedia>=25?'var(--ye)':'var(--red)'}"><b>${fmtPct(g.abertMedia)}</b></td>
+            <td style="text-align:right;color:${g.cliqueMedia>=1?'var(--gr)':g.cliqueMedia>=0.3?'var(--ye)':'var(--t2)'}">${fmtPct(g.cliqueMedia)}</td>
+          </tr>`;
+        }).join('')}
+      </tbody></table>
+    </div>`;
+
+  // Gráfico de tendência (abertura ponderada por semana × marca)
+  const chartHTML = (() => {
+    if (semanasOrdenadas.length < 2) {
+      return `<div class="empty" style="padding:18px;font-size:11px"><p>Adicione mais semanas em <code>metricas.json</code> para ver a tendência.</p></div>`;
+    }
+    // Ordena semanas ascendente pro gráfico
+    const semanas = [...semanasOrdenadas].reverse();
+    const marcas = ['Desconexo', 'Desco', 'DNX Hotelaria'];
+
+    // Constrói matriz [marca][semana] = abertMedia (ou null)
+    const dados = {};
+    marcas.forEach(m => {
+      dados[m] = semanas.map(s => {
+        const g = gruposArr.find(gr => gr.semanaInicio === s && gr.marca === m);
+        return g ? g.abertMedia : null;
+      });
+    });
+
+    const W = 720, H = 220, PAD_L = 40, PAD_R = 12, PAD_T = 16, PAD_B = 40;
     const innerW = W - PAD_L - PAD_R, innerH = H - PAD_T - PAD_B;
 
-    const series = [
-      {label:'Investimento (R$)', color:'var(--or)', vals: hist.map(s => (s.metaAds?.investimento)||0)},
-      {label:'Conversas iniciadas', color:'var(--bl)', vals: hist.map(s => (s.metaAds?.conversasIniciadas)||0)},
-      {label:'Leads totais', color:'var(--pu)', vals: hist.map(s => {
-        const lp = Object.values(s.leads?.trafegoPago||{}).reduce((a,b)=>a+b,0);
-        const lo = Object.values(s.leads?.organico||{}).reduce((a,b)=>a+b,0);
-        return lp+lo;
-      })}
-    ];
+    const N = semanas.length;
+    const xStep = N > 1 ? innerW / (N - 1) : innerW;
 
-    // Normaliza cada série pelo próprio máximo (eixos independentes pra todas caberem)
-    const N = hist.length;
-    const xStep = N > 1 ? innerW/(N-1) : innerW;
+    // Escala Y de 0 a 80%
+    const maxY = 80;
+    const yPos = (v) => PAD_T + innerH - (v / maxY) * innerH;
 
-    const polyFor = (vals) => {
-      const max = Math.max(...vals, 1);
-      const pts = vals.map((v,i) => {
-        const x = PAD_L + i*xStep;
-        const y = PAD_T + innerH - (v/max)*innerH;
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-      });
-      return pts.join(' ');
+    const cores = {
+      'Desconexo': '#e05555',
+      'Desco': '#d4843a',
+      'DNX Hotelaria': '#4d87c4'
     };
 
-    const dotsFor = (vals, color) => {
-      const max = Math.max(...vals, 1);
-      return vals.map((v,i) => {
-        const x = PAD_L + i*xStep;
-        const y = PAD_T + innerH - (v/max)*innerH;
-        return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${color}"/>`;
-      }).join('');
-    };
+    // Linhas de referência (20, 40, 60%)
+    const gridLines = [20, 40, 60].map(v => {
+      const y = yPos(v);
+      return `<line x1="${PAD_L}" y1="${y.toFixed(1)}" x2="${PAD_L+innerW}" y2="${y.toFixed(1)}" stroke="var(--b)" stroke-width="1" stroke-dasharray="2,3"/>
+              <text x="${PAD_L-6}" y="${(y+3).toFixed(1)}" font-size="9" fill="var(--t3)" text-anchor="end" font-family="DM Sans">${v}%</text>`;
+    }).join('');
 
-    const xLabels = hist.map((s,i) => {
-      const x = PAD_L + i*xStep;
-      const label = fmtData(s.data);
+    // Linhas de dados por marca
+    const seriesHTML = marcas.map(m => {
+      const vals = dados[m];
+      // Pontos válidos (não nulos)
+      const pts = vals.map((v, i) => v === null ? null : { x: PAD_L + i * xStep, y: yPos(v), v });
+      const validPts = pts.filter(p => p !== null);
+      if (!validPts.length) return '';
+
+      // Poliline conectando pontos consecutivos válidos
+      const polyPts = validPts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+      const dots = validPts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="${cores[m]}"/>`).join('');
+      return `<polyline points="${polyPts}" fill="none" stroke="${cores[m]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${dots}`;
+    }).join('');
+
+    // Labels do eixo X
+    const xLabels = semanas.map((s, i) => {
+      const x = PAD_L + i * xStep;
+      const label = gruposArr.find(g => g.semanaInicio === s)?.semanaLabel || s;
       return `<text x="${x.toFixed(1)}" y="${H-12}" font-size="9" fill="var(--t3)" text-anchor="middle" font-family="DM Sans">${label}</text>`;
     }).join('');
 
     return `
-    <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
-      ${series.map(s => `<span style="font-size:10px;color:var(--t2);display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:2px;background:${s.color};display:inline-block"></span>${s.label}</span>`).join('')}
+    <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+      ${marcas.map(m => `<span style="font-size:10px;color:var(--t2);display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:2px;background:${cores[m]};display:inline-block"></span>${m}</span>`).join('')}
     </div>
     <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
-      <line x1="${PAD_L}" y1="${PAD_T+innerH}" x2="${PAD_L+innerW}" y2="${PAD_T+innerH}" stroke="var(--b)" stroke-width="1"/>
-      ${series.map(s => `<polyline points="${polyFor(s.vals)}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${dotsFor(s.vals, s.color)}`).join('')}
+      ${gridLines}
+      <line x1="${PAD_L}" y1="${PAD_T+innerH}" x2="${PAD_L+innerW}" y2="${PAD_T+innerH}" stroke="var(--b2)" stroke-width="1"/>
+      ${seriesHTML}
       ${xLabels}
     </svg>
-    <div style="font-size:9px;color:var(--t3);margin-top:4px">Escalas independentes por série — comparar evolução proporcional, não valores absolutos</div>`;
+    <div style="font-size:9px;color:var(--t3);margin-top:4px">Taxa de abertura ponderada por volume de envio · semana × marca</div>`;
   })();
 
-  el.innerHTML = `
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-  <div>
-    <div style="font-size:11px;color:var(--t3)">Snapshot</div>
-    <div style="font-family:'Syne',sans-serif;font-size:14px;color:var(--ac)">${s.periodo||fmtData(s.data)}</div>
-  </div>
-  <div style="font-size:10px;color:var(--t3)">Atualizado em <b style="color:var(--t2)">${fmtData(s.data)}</b> · ${METRICAS.snapshots.length} snapshot${METRICAS.snapshots.length>1?'s':''} no histórico</div>
-</div>
+  const graficoHTML = `
+    <div class="sh"><div class="st" style="color:var(--ac)">Tendência de abertura</div><div class="sl"></div></div>
+    <div class="pan" style="padding:18px;margin-bottom:18px">
+      ${chartHTML}
+    </div>`;
 
-<div class="sh"><div class="st" style="color:var(--or)">Meta Ads · ${ma.marca||'Desconexo'} (${ma.conta||'CA - Desconexo'})</div><div class="sl"></div></div>
-<div class="sg" style="grid-template-columns:repeat(5,1fr)">
-  <div class="sc" style="--cc:var(--or)"><div class="sl2">Valor investido</div><div class="sv" style="color:var(--or)">${fmtBRL(ma.investimento)}</div></div>
-  <div class="sc" style="--cc:var(--bl)"><div class="sl2">CTR</div><div class="sv" style="color:var(--bl)">${fmtPct(ma.ctr)}</div><div class="ss">Taxa de cliques</div></div>
-  <div class="sc" style="--cc:var(--pu)"><div class="sl2">Impressões</div><div class="sv" style="color:var(--pu)">${fmtNum(ma.impressoes)}</div></div>
-  <div class="sc" style="--cc:var(--te)"><div class="sl2">Alcance</div><div class="sv" style="color:var(--te)">${fmtNum(ma.alcance)}</div></div>
-  <div class="sc" style="--cc:var(--gr)"><div class="sl2">Conversas iniciadas</div><div class="sv" style="color:var(--gr)">${fmtNum(ma.conversasIniciadas)}</div><div class="ss">${fmtBRL(ma.custoConversa)} cada</div></div>
-</div>
-<div class="sg" style="grid-template-columns:repeat(3,1fr);margin-top:8px;margin-bottom:18px">
-  <div class="sc" style="--cc:var(--ye)"><div class="sl2">CPC médio</div><div class="sv" style="color:var(--ye)">${fmtBRL(ma.cpc)}</div></div>
-  <div class="sc" style="--cc:var(--ac)"><div class="sl2">Total de cliques</div><div class="sv" style="color:var(--ac)">${fmtNum(ma.cliques)}</div></div>
-  <div class="sc" style="--cc:var(--ac)"><div class="sl2">Cliques no link</div><div class="sv" style="color:var(--ac)">${fmtNum(ma.cliquesLink)}</div></div>
-</div>
-
-<div class="sh"><div class="st" style="color:var(--pu)">Leads do período</div><div class="sl"></div></div>
-<div class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px">
-  <div class="sc" style="--cc:var(--pu)"><div class="sl2">Total de leads</div><div class="sv" style="color:var(--pu)">${totalLeads}</div></div>
-  <div class="sc" style="--cc:var(--or)"><div class="sl2">Tráfego pago</div><div class="sv" style="color:var(--or)">${totalPagos}</div><div class="ss">Desconexo: ${tpDescon} · Desco: ${tpDesco} · Hotelaria: ${tpHotelaria}</div></div>
-  <div class="sc" style="--cc:var(--gr)"><div class="sl2">Orgânico</div><div class="sv" style="color:var(--gr)">${totalOrgan}</div><div class="ss">Desconexo: ${orgDescon} · Desco: ${orgDesco} · Hotelaria: ${orgHotelaria}</div></div>
-  <div class="sc" style="--cc:var(--te)"><div class="sl2">Custo por lead pago</div><div class="sv" style="color:var(--te)">${totalPagos>0?fmtBRL((ma.investimento||0)/totalPagos):'—'}</div></div>
-</div>
-
-<div class="sh"><div class="st" style="color:var(--te)">RD Station · Newsletter</div><div class="sl"></div></div>
-<div class="sg" style="grid-template-columns:repeat(3,1fr);margin-bottom:10px">
-  <div class="sc" style="--cc:var(--te)"><div class="sl2">Total enviados</div><div class="sv" style="color:var(--te)">${fmtNum(totalEnviados)}</div><div class="ss">${rd.campanhas.length} campanhas</div></div>
-  <div class="sc" style="--cc:var(--gr)"><div class="sl2">Abertura média</div><div class="sv" style="color:var(--gr)">${fmtPct(abMedia)}</div><div class="ss">Ponderada por envio</div></div>
-  <div class="sc" style="--cc:var(--bl)"><div class="sl2">Cliques médios</div><div class="sv" style="color:var(--bl)">${fmtPct(clMedia)}</div><div class="ss">Ponderada por envio</div></div>
-</div>
-<div class="tw" style="margin-bottom:18px">
-  <table><thead><tr>
-    <th>Campanha</th><th>Marca</th><th>Data</th><th style="text-align:right">Selecionados</th><th style="text-align:right">Abertura</th><th style="text-align:right">Cliques</th>
-  </tr></thead><tbody>
-    ${rd.campanhas.map(c => `<tr>
-      <td style="color:var(--t);max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.nome}</td>
-      <td><span class="badge ${({Desconexo:'br',Desco:'bo','DNX Hotelaria':'bb'})[c.marca]||'bgr'}">${c.marca||'—'}</span></td>
-      <td style="color:var(--t3);font-size:10px">${c.data||'—'}</td>
-      <td style="text-align:right;color:var(--t)">${fmtNum(c.selecionados)}</td>
-      <td style="text-align:right;color:${c.abertura>=30?'var(--gr)':c.abertura>=20?'var(--ye)':'var(--t2)'}">${fmtPct(c.abertura)}</td>
-      <td style="text-align:right;color:${c.cliques>=2?'var(--gr)':c.cliques>=1?'var(--ye)':'var(--t2)'}">${fmtPct(c.cliques)}</td>
-    </tr>`).join('')}
-  </tbody></table>
-</div>
-
-<div class="sh"><div class="st" style="color:var(--ac)">Tendência · últimos ${hist.length} snapshot${hist.length>1?'s':''}</div><div class="sl"></div></div>
-<div class="pan" style="padding:18px;margin-bottom:18px">
-  ${chartHTML}
-</div>
-`;
+  el.innerHTML = headerHTML + cardsHTML + tabelaHTML + graficoHTML;
 }
 
 
