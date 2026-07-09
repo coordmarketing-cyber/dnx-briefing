@@ -183,6 +183,7 @@ tr.row-overdue td{background:rgba(224,85,85,0.04)}
 let BOARDS = [];   // dados do Trello (vem da /api/trello)
 let NOTION = [];   // dados do Notion (vem da /api/notion)
 let V='dashboard',BF=null,NF=null,PF=null,TF='active',NTF='date',PA='emails';
+let EMKT_SORT='data', EMKT_DIR='desc', EMKT_MARCA='todas'; // Filtros da tabela de Emails MKT
 let METRICAS = null; // Dados de performance (Meta Ads + RD Station + Leads) — vem de /metricas.json
 let METRICAS_MENSAL = null; // Fechamentos mensais consolidados — vem de /metricas-mensal.json
 let LOADING = false;
@@ -543,6 +544,17 @@ function fmtNum(n){if(n===null||n===undefined||isNaN(n))return'—';return Numbe
 function fmtPct(n){if(n===null||n===undefined||isNaN(n))return'—';return Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%'}
 function fmtData(s){if(!s)return'—';const[y,m,d]=s.split('-');return`${d}/${m}`}
 
+// Toggle de ordenação da tabela de Emails MKT
+function emktSort(key){
+  if (EMKT_SORT === key) {
+    EMKT_DIR = EMKT_DIR === 'asc' ? 'desc' : 'asc';
+  } else {
+    EMKT_SORT = key;
+    EMKT_DIR = 'desc';
+  }
+  render();
+}
+
 // Resumo compacto pro dashboard (baseado nos disparos de email)
 function perfSummaryDash(){
   if(!METRICAS || !METRICAS.disparos || !METRICAS.disparos.length) return '';
@@ -725,24 +737,56 @@ function rPerformanceEmailsMKT(el){
         </div>`).join('')}
     </div>`;
 
-  // Tabela histórica (todas as semanas x marcas, ordenadas do mais recente pro mais antigo)
-  const gruposOrdenados = [...gruposArr].sort((a, b) => {
-    if (a.semanaInicio !== b.semanaInicio) return b.semanaInicio.localeCompare(a.semanaInicio);
-    const ordem = { 'Desconexo': 0, 'Desco': 1, 'DNX Hotelaria': 2 };
-    return (ordem[a.marca] ?? 99) - (ordem[b.marca] ?? 99);
+  // Tabela histórica com filtro por marca + ordenação clicável nos cabeçalhos
+  let gruposFiltrados = [...gruposArr];
+  if (EMKT_MARCA !== 'todas') {
+    gruposFiltrados = gruposFiltrados.filter(g => g.marca === EMKT_MARCA);
+  }
+
+  // Ordenação
+  const sortKeys = {
+    'data': (a, b) => a.semanaInicio.localeCompare(b.semanaInicio),
+    'enviados': (a, b) => a.totalSelecionados - b.totalSelecionados,
+    'abertura': (a, b) => a.abertMedia - b.abertMedia,
+    'cliques': (a, b) => a.cliqueMedia - b.cliqueMedia
+  };
+  const sortFn = sortKeys[EMKT_SORT] || sortKeys['data'];
+  gruposFiltrados.sort((a, b) => {
+    const cmp = sortFn(a, b);
+    return EMKT_DIR === 'asc' ? cmp : -cmp;
   });
+
+  // Helper pra cabeçalho clicável de ordenação
+  const th = (key, label, align) => {
+    const ativo = EMKT_SORT === key;
+    const seta = ativo ? (EMKT_DIR === 'asc' ? ' ↑' : ' ↓') : '';
+    const cor = ativo ? 'var(--ac)' : 'var(--t3)';
+    return `<th style="text-align:${align||'left'};cursor:pointer;color:${cor}" onclick="emktSort('${key}')">${label}${seta}</th>`;
+  };
+
+  // Botões de filtro por marca
+  const filtroMarcaHTML = ['todas', 'Desconexo', 'Desco', 'DNX Hotelaria'].map(m => {
+    const label = m === 'todas' ? 'Todas' : m;
+    return `<button class="fb ${EMKT_MARCA===m?'on':''}" onclick="EMKT_MARCA='${m}';render()">${label}</button>`;
+  }).join('');
 
   const tabelaHTML = `
     <div class="sh"><div class="st" style="color:var(--ac)">Histórico semanal</div><div class="sl"></div></div>
+    <div class="frow" style="margin-bottom:8px">
+      <span class="filter-label">Marca:</span>
+      ${filtroMarcaHTML}
+      <span style="font-size:9px;color:var(--t3);margin-left:12px">Clique nos cabeçalhos da tabela para ordenar</span>
+    </div>
     <div class="tw" style="margin-bottom:18px">
       <table><thead><tr>
-        <th>Semana</th><th>Marca</th>
+        ${th('data', 'Semana', 'left')}
+        <th>Marca</th>
         <th style="text-align:right">Disparos</th>
-        <th style="text-align:right">Enviados</th>
-        <th style="text-align:right">Abertura</th>
-        <th style="text-align:right">Cliques</th>
+        ${th('enviados', 'Enviados', 'right')}
+        ${th('abertura', 'Abertura', 'right')}
+        ${th('cliques', 'Cliques', 'right')}
       </tr></thead><tbody>
-        ${gruposOrdenados.map(g => {
+        ${gruposFiltrados.length ? gruposFiltrados.map(g => {
           const destaque = g.semanaInicio === semanaRecente;
           return `<tr${destaque ? ' style="background:rgba(200,184,154,0.04)"' : ''}>
             <td style="color:${destaque?'var(--ac)':'var(--t)'}">${g.semanaLabel}${destaque?' ✨':''}</td>
@@ -752,7 +796,7 @@ function rPerformanceEmailsMKT(el){
             <td style="text-align:right;color:${g.abertMedia>=40?'var(--gr)':g.abertMedia>=25?'var(--ye)':'var(--red)'}"><b>${fmtPct(g.abertMedia)}</b></td>
             <td style="text-align:right;color:${g.cliqueMedia>=1?'var(--gr)':g.cliqueMedia>=0.3?'var(--ye)':'var(--t2)'}">${fmtPct(g.cliqueMedia)}</td>
           </tr>`;
-        }).join('')}
+        }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:20px">Nenhum registro para essa marca</td></tr>'}
       </tbody></table>
     </div>`;
 
