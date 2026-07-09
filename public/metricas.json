@@ -1,5 +1,5 @@
 {
-  "_instrucoes": "Emails MKT (RD Station). Cada item é um disparo individual. Agrupamento e cálculos são feitos no frontend. Atualizar sempre que houver novos dados semanais.",
+  "_instrucoes": "Emails MKT (RD Station). Regra de marca: prefixo [DESCONEXO/DESCO MÓVEIS/DNX HOTELARIA]. Exceção: [DESCONEXO] CASE DE SUCESSO com segmentação Desco vira Desco.",
   "atualizadoEm": "2026-07-09",
   "periodo": "01/06 – 30/06/2026",
   "disparos": [
@@ -11,7 +11,7 @@
       "hora": "10:00",
       "semanaInicio": "2026-06-29",
       "semanaFim": "2026-07-05",
-      "semanaLabel": "29/06–05/07",
+      "semanaLabel": "Sem. 29/06 · 30/06",
       "selecionados": 954,
       "entregues": 951,
       "aberturas": 550,
@@ -27,7 +27,7 @@
       "hora": "12:16",
       "semanaInicio": "2026-06-29",
       "semanaFim": "2026-07-05",
-      "semanaLabel": "29/06–05/07",
+      "semanaLabel": "Sem. 29/06 · 29/06",
       "selecionados": 954,
       "entregues": 951,
       "aberturas": 530,
@@ -36,14 +36,14 @@
       "taxaClique": 0.21
     },
     {
-      "marca": "Desconexo",
+      "marca": "Desco",
       "nome": "CASE DE SUCESSO - CASA DOS VENTOS - TIKTOK - Disparo 01",
       "nomeCompleto": "[DESCONEXO] CASE DE SUCESSO - CASA DOS VENTOS - TIKTOK - Disparo 01",
       "data": "2026-06-29",
       "hora": "11:42",
       "semanaInicio": "2026-06-29",
       "semanaFim": "2026-07-05",
-      "semanaLabel": "29/06–05/07",
+      "semanaLabel": "Sem. 29/06 · 29/06",
       "selecionados": 520,
       "entregues": 513,
       "aberturas": 252,
