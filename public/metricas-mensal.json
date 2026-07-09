@@ -1,258 +1,63 @@
 {
+  "_instrucoes": "Fechamentos mensais consolidados. Cada item é o resumo de 1 mês inteiro. Campos com valor null aparecem como 'aguardando' no painel. Atualizar no início de cada mês.",
   "fechamentos": [
-    {
-      "mes": "2026-04",
-      "label": "Abril/2026",
-      "periodo": "01/04 — 30/04",
-      "marcas": {
-        "desconexo": {
-          "investimento": {
-            "anuncios": 602.02,
-            "ativacoes": 21804.00
-          },
-          "metaAds": {
-            "cliques": null,
-            "conversas": null,
-            "ctr": null,
-            "cpc": null
-          },
-          "rdStation": {
-            "campanhas": 15,
-            "enviados": 17065,
-            "abertura": 31.97,
-            "cliques": 0.35
-          },
-          "leads": {
-            "trafegoPago": 20,
-            "organico": 10,
-            "total": 30
-          },
-          "funil": {
-            "volume": 16,
-            "taxa_conversao": 0.0
-          },
-          "vendas": {
-            "geradas": 0,
-            "receita": 0.0
-          }
-        },
-        "desco": {
-          "investimento": {
-            "anuncios": 0.0,
-            "ativacoes": 0.0,
-            "total": 0.0
-          },
-          "metaAds": {
-            "cliques": null,
-            "conversas": null,
-            "ctr": null,
-            "cpc": null
-          },
-          "rdStation": {
-            "campanhas": null,
-            "enviados": null,
-            "abertura": null,
-            "cliques": null
-          },
-          "leads": {
-            "trafegoPago": 0,
-            "organico": 2,
-            "total": 2
-          },
-          "funil": {
-            "volume": 0,
-            "taxa_conversao": null
-          },
-          "vendas": {
-            "geradas": 0,
-            "receita": 0.0
-          }
-        },
-        "dnxHotelaria": {
-          "investimento": {
-            "anuncios": 0.0,
-            "ativacoes": 0.0,
-            "total": 0.0
-          },
-          "metaAds": {
-            "cliques": null,
-            "conversas": null,
-            "ctr": null,
-            "cpc": null
-          },
-          "rdStation": {
-            "campanhas": null,
-            "enviados": null,
-            "abertura": null,
-            "cliques": null
-          },
-          "leads": {
-            "trafegoPago": 0,
-            "organico": 1,
-            "total": 1
-          },
-          "funil": {
-            "volume": 0,
-            "taxa_conversao": 0.0
-          },
-          "vendas": {
-            "geradas": 0,
-            "receita": 0.0
-          }
-        }
-      },
-      "consolidado": {
-        "investimento": {
-          "anuncios": 602.02,
-          "ativacoes": 21804.00
-        },
-        "rdStation": {
-          "campanhas": 15,
-          "enviados": 17065,
-          "abertura": 31.97,
-          "cliques": 0.35
-        },
-        "leads": {
-          "trafegoPago": 20,
-          "organico": 13,
-          "total": 33
-        },
-        "funil": {
-          "volume": 16,
-          "taxa_conversao": 0.0
-        },
-        "vendas": {
-          "geradas": 0,
-          "receita": 0.0
-        }
-      }
-    },
     {
       "mes": "2026-05",
       "label": "Maio/2026",
-      "periodo": "01/05 — 31/05",
-      "marcas": {
-        "desconexo": {
-          "investimento": {
-            "anuncios": 1199.78,
-            "ativacoes": 45430.80
-          },
-          "metaAds": {
-            "cliques": 2031,
-            "conversas": 678,
-            "ctr": 2.08,
-            "cpc": 0.88
-          },
-          "rdStation": {
-            "campanhas": 18,
-            "enviados": 15402,
-            "abertura": 40.36,
-            "cliques": 0.35
-          },
-          "leads": {
-            "trafegoPago": 361,
-            "organico": 360,
-            "total": 721
-          },
-          "funil": {
-            "volume": 49,
-            "taxa_conversao": 14.29
-          },
-          "vendas": {
-            "geradas": 7,
-            "receita": 118075.94
-          }
+      "leadsGerados": {
+        "total": 723,
+        "organicos": 362,
+        "pagos": 361
+      },
+      "leadsQualificados": {
+        "total": 49,
+        "porMarca": {
+          "Desconexo": null,
+          "Desco": null,
+          "DNX Hotelaria": null
         },
-        "desco": {
-          "investimento": {
-            "anuncios": 0.0,
-            "ativacoes": null,
-            "total": 0.0
-          },
-          "metaAds": {
-            "cliques": null,
-            "conversas": null,
-            "ctr": null,
-            "cpc": null
-          },
-          "rdStation": {
-            "campanhas": null,
-            "enviados": null,
-            "abertura": null,
-            "cliques": null
-          },
-          "leads": {
-            "trafegoPago": 0,
-            "organico": 0,
-            "total": 0
-          },
-          "funil": {
-            "volume": 0,
-            "taxa_conversao": null
-          },
-          "vendas": {
-            "geradas": 0,
-            "receita": 0.0
-          }
-        },
-        "dnxHotelaria": {
-          "investimento": {
-            "anuncios": 0.0,
-            "ativacoes": null,
-            "total": 0.0
-          },
-          "metaAds": {
-            "cliques": null,
-            "conversas": null,
-            "ctr": null,
-            "cpc": null
-          },
-          "rdStation": {
-            "campanhas": null,
-            "enviados": null,
-            "abertura": null,
-            "cliques": null
-          },
-          "leads": {
-            "trafegoPago": 0,
-            "organico": 0,
-            "total": 0
-          },
-          "funil": {
-            "volume": 0,
-            "taxa_conversao": 0.0
-          },
-          "vendas": {
-            "geradas": 0,
-            "receita": 0.0
-          }
+        "porOrigem": {
+          "Pago": null,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": null
         }
       },
-      "consolidado": {
-        "investimento": {
-          "anuncios": 1199.78,
-          "ativacoes": 45430.80
+      "vendasFechadas": 7,
+      "receita": 118076,
+      "investimento": 83662,
+      "roi": 41.1,
+      "taxaConversao": 14.29,
+      "observacoes": "Dados extraídos do card FATO apresentado. Breakdown por marca e origem não estava disponível no material — pode ser complementado depois."
+    },
+    {
+      "mes": "2026-06",
+      "label": "Junho/2026",
+      "leadsGerados": {
+        "total": null,
+        "organicos": null,
+        "pagos": null
+      },
+      "leadsQualificados": {
+        "total": 9,
+        "porMarca": {
+          "Desconexo": 8,
+          "Desco": 0,
+          "DNX Hotelaria": 1
         },
-        "rdStation": {
-          "campanhas": 18,
-          "enviados": 15402,
-          "abertura": 40.36,
-          "cliques": 0.35
-        },
-        "leads": {
-          "trafegoPago": 361,
-          "organico": 360,
-          "total": 721
-        },
-        "funil": {
-          "volume": 49,
-          "taxa_conversao": 14.29
-        },
-        "vendas": {
-          "geradas": 7,
-          "receita": 118075.94
+        "porOrigem": {
+          "Pago": 3,
+          "Newsletter": 1,
+          "Site": 3,
+          "Orgânico (redes)": 2
         }
-      }
+      },
+      "vendasFechadas": null,
+      "receita": null,
+      "investimento": null,
+      "roi": null,
+      "taxaConversao": null,
+      "observacoes": "Qualificados extraídos da aba JUN (DESTINO = RD ou NEGOCIAÇÃO). Aguardando fechamento de: total de leads gerados, investimento, receita, ROI e vendas fechadas."
     }
   ]
 }
