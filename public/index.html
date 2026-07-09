@@ -192,7 +192,7 @@ let LAST_ERROR = null;
 // Cores (iguais ao original)
 const BCOL={"Marca Pablo":"#a57bc4","DNX HOTELARIA - Projeto Ohana":"#3d9488","GRUPO DNX | Ceará Autoral":"#5a9966","JORNADA DE CAMPANHAS'26":"#c9a840","FAROL HOTEL":"#4d87c4","ED TEMPO - CDT ENGENHARIA":"#d4843a","HUB NB BY DESCO":"#b85c8a","EZ MAIO - 26":"#e05555"};
 const MCOL={"Desconexo":"br","Desco":"bo","DNX Hotelaria":"bb","Pablo Guterres":"bgr"};
-const SCOL={"Em produção":"bb","Em revisão":"bpu","Aprovado":"bgg","Agendado":"by","Publicado":"bt","Ideia":"bgr"};
+const SCOL={"Em produção":"bb","Em revisão":"bpu","Aprovado":"bgg","Agendado":"by","Publicado":"bt","Ideia":"bgr","Não publicado":"bgr"};
 
 // ====== HELPERS DE DATA ======
 function today(){return new Date().toISOString().split('T')[0]}
@@ -239,8 +239,13 @@ function nurgency(due){
   return'soon';
 }
 
-function datePill(due){
+function datePill(due, neutro){
   const u=nurgency(due);
+  // Modo neutro: usado quando o item não é urgência-relevante (ex: Não publicado)
+  if (neutro) {
+    if (!due) return `<span class="date-pill dp-none">Sem data</span>`;
+    return `<span class="date-pill dp-none" style="opacity:0.7">${fd(due)}</span>`;
+  }
   if(u==='today')return`<span class="date-pill dp-today">Hoje ${fd(due)}</span>`;
   if(u==='tomorrow')return`<span class="date-pill dp-tomorrow">Amanhã ${fd(due)}</span>`;
   if(u==='soon')return`<span class="date-pill dp-soon">${fd(due)}</span>`;
@@ -291,6 +296,11 @@ function getSortedNotion(filter){
   let out=NOTION.filter(n=>n.status!=='Publicado');
   if(NF)out=out.filter(n=>(n.marca||'').split(',').map(s=>s.trim()).includes(NF));
   if(PF)out=out.filter(n=>personInNotion(PF, n));
+
+  // Regra: itens com status "Não publicado" ficam ocultos das visões de urgência.
+  // Só aparecem quando o filtro é "all" (visão completa).
+  if(filter!=='all')out=out.filter(n=>n.status!=='Não publicado');
+
   if(filter==='today')out=out.filter(n=>nurgency(n.due)==='today'||nurgency(n.due)==='overdue');
   else if(filter==='soon')out=out.filter(n=>['today','tomorrow','soon'].includes(nurgency(n.due)));
   else if(filter==='ready')out=out.filter(n=>['Aprovado','Agendado'].includes(n.status));
@@ -514,7 +524,7 @@ ${perfSummaryDash()}
             <div class="rn">${n.url?`<a href="${n.url}" target="_blank" style="color:inherit;text-decoration:none">${n.name}</a>`:n.name}</div>
             <div class="rm">${n.canal||''}</div>
           </div>
-          <div class="rtags">${datePill(n.due)}${sbadge(n.status)}</div>
+          <div class="rtags">${datePill(n.due, n.status==='Não publicado')}${sbadge(n.status)}</div>
         </div>`).join(''):'<div class="empty"><h3>Sem conteúdo agendado</h3></div>'}
     </div>
   </div>
@@ -1233,12 +1243,17 @@ function rMonday(el, board) {
 function rNotion(el){
   const sorted=getSortedNotion(NTF);
 
+  // "Não publicado" fica num grupo próprio no final (só aparece em NTF='all', pq o filtro anterior remove das outras visões)
+  const naoPubs = sorted.filter(n => n.status === 'Não publicado');
+  const outros = sorted.filter(n => n.status !== 'Não publicado');
+
   const groups=[
-    {key:'overdue',label:'Vencido — publicar urgente',items:sorted.filter(n=>nurgency(n.due)==='overdue')},
-    {key:'today',label:`Hoje — ${fd(today())}`,items:sorted.filter(n=>nurgency(n.due)==='today')},
-    {key:'tomorrow',label:`Amanhã — ${fd(tomorrow())}`,items:sorted.filter(n=>nurgency(n.due)==='tomorrow')},
-    {key:'soon',label:'Próximos dias',items:sorted.filter(n=>nurgency(n.due)==='soon')},
-    {key:'none',label:'Sem data definida',items:sorted.filter(n=>nurgency(n.due)==='none')},
+    {key:'overdue',label:'Vencido — publicar urgente',items:outros.filter(n=>nurgency(n.due)==='overdue')},
+    {key:'today',label:`Hoje — ${fd(today())}`,items:outros.filter(n=>nurgency(n.due)==='today')},
+    {key:'tomorrow',label:`Amanhã — ${fd(tomorrow())}`,items:outros.filter(n=>nurgency(n.due)==='tomorrow')},
+    {key:'soon',label:'Próximos dias',items:outros.filter(n=>nurgency(n.due)==='soon')},
+    {key:'none',label:'Sem data definida',items:outros.filter(n=>nurgency(n.due)==='none')},
+    {key:'naopub',label:'Não publicado — decisão consciente',items:naoPubs},
   ].filter(g=>g.items.length>0);
 
   el.innerHTML=`
@@ -1265,7 +1280,7 @@ function rNotion(el){
           <td>${mbadge(n.marca)}</td>
           <td style="color:var(--t2);font-size:10px">${n.canal||'—'}</td>
           <td style="color:var(--t2);font-size:10px">${n.formato||'—'}</td>
-          <td>${datePill(n.due)}</td>
+          <td>${datePill(n.due, n.status==='Não publicado')}</td>
           <td>${sbadge(n.status)}</td>
         </tr>`).join('')}</tbody></table>`).join('')}
     </div>`:'<div class="empty"><h3>Nenhum conteúdo</h3></div>'}`;
