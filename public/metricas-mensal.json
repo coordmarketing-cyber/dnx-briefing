@@ -1,6 +1,64 @@
 {
-  "_instrucoes": "Fechamentos mensais consolidados. Cada item é o resumo de 1 mês inteiro. Campos com valor null aparecem como 'aguardando' no painel. Atualizar no início de cada mês.",
+  "_instrucoes": "Fechamentos mensais oficiais. Fonte: DADOS_PAINEL (aba GRUPO). Campos null = aguardando fechamento ou não aplicável.",
   "fechamentos": [
+    {
+      "mes": "2026-07",
+      "label": "Julho/2026",
+      "leadsGerados": {
+        "total": 72,
+        "organicos": 72,
+        "pagos": 0
+      },
+      "leadsQualificados": {
+        "total": 26,
+        "porMarca": {
+          "Desconexo": 18,
+          "Desco": 8,
+          "DNX Hotelaria": 0
+        },
+        "porOrigem": {
+          "Pago": 0,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": 26
+        }
+      },
+      "vendasFechadas": null,
+      "receita": null,
+      "investimento": null,
+      "roi": null,
+      "taxaConversao": 0.0,
+      "observacoes": "Fonte: DADOS_PAINEL (aba GRUPO). Sem investimento em anúncios ou ativações registrado. Todos os leads são orgânicos."
+    },
+    {
+      "mes": "2026-06",
+      "label": "Junho/2026",
+      "leadsGerados": {
+        "total": 60,
+        "organicos": 38,
+        "pagos": 22
+      },
+      "leadsQualificados": {
+        "total": 13,
+        "porMarca": {
+          "Desconexo": 10,
+          "Desco": 2,
+          "DNX Hotelaria": 1
+        },
+        "porOrigem": {
+          "Pago": 2,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": 11
+        }
+      },
+      "vendasFechadas": null,
+      "receita": null,
+      "investimento": null,
+      "roi": null,
+      "taxaConversao": 0.0,
+      "observacoes": "Fonte: DADOS_PAINEL (aba GRUPO). Investimento em anúncios: R$ 875,68 (Desconexo). CPL: R$ 95,45. Receita/vendas aguardando confirmação."
+    },
     {
       "mes": "2026-05",
       "label": "Maio/2026",
@@ -17,47 +75,134 @@
           "DNX Hotelaria": null
         },
         "porOrigem": {
-          "Pago": null,
+          "Pago": 13,
           "Newsletter": null,
           "Site": null,
-          "Orgânico (redes)": null
+          "Orgânico (redes)": 36
         }
       },
-      "vendasFechadas": 7,
-      "receita": 118076,
-      "investimento": 83662,
-      "roi": 41.1,
+      "vendasFechadas": null,
+      "receita": 118075.94,
+      "investimento": 83661.71,
+      "roi": 141.13,
       "taxaConversao": 14.29,
-      "observacoes": "Dados extraídos do card FATO apresentado. Breakdown por marca e origem não estava disponível no material — pode ser complementado depois."
+      "observacoes": null
     },
     {
-      "mes": "2026-06",
-      "label": "Junho/2026",
+      "mes": "2026-04",
+      "label": "Abril/2026",
       "leadsGerados": {
-        "total": null,
-        "organicos": null,
-        "pagos": null
+        "total": 33,
+        "organicos": 23,
+        "pagos": 10
       },
       "leadsQualificados": {
-        "total": 9,
+        "total": 18,
         "porMarca": {
-          "Desconexo": 8,
-          "Desco": 0,
-          "DNX Hotelaria": 1
+          "Desconexo": null,
+          "Desco": null,
+          "DNX Hotelaria": null
         },
         "porOrigem": {
           "Pago": 3,
-          "Newsletter": 1,
-          "Site": 3,
-          "Orgânico (redes)": 2
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": 15
         }
       },
       "vendasFechadas": null,
       "receita": null,
-      "investimento": null,
-      "roi": null,
-      "taxaConversao": null,
-      "observacoes": "Qualificados extraídos da aba JUN (DESTINO = RD ou NEGOCIAÇÃO). Aguardando fechamento de: total de leads gerados, investimento, receita, ROI e vendas fechadas."
+      "investimento": 101693.51,
+      "roi": 0.0,
+      "taxaConversao": 0.0,
+      "observacoes": null
+    },
+    {
+      "mes": "2026-03",
+      "label": "Março/2026",
+      "leadsGerados": {
+        "total": 84,
+        "organicos": 48,
+        "pagos": 36
+      },
+      "leadsQualificados": {
+        "total": 24,
+        "porMarca": {
+          "Desconexo": null,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": 6,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": 18
+        }
+      },
+      "vendasFechadas": null,
+      "receita": 332000.0,
+      "investimento": 76832.76,
+      "roi": 432.11,
+      "taxaConversao": 8.33,
+      "observacoes": null
+    },
+    {
+      "mes": "2026-02",
+      "label": "Fevereiro/2026",
+      "leadsGerados": {
+        "total": 85,
+        "organicos": 37,
+        "pagos": 48
+      },
+      "leadsQualificados": {
+        "total": 18,
+        "porMarca": {
+          "Desconexo": null,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": 1,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": 17
+        }
+      },
+      "vendasFechadas": null,
+      "receita": null,
+      "investimento": 38756.27,
+      "roi": 0.0,
+      "taxaConversao": 0.0,
+      "observacoes": null
+    },
+    {
+      "mes": "2026-01",
+      "label": "Janeiro/2026",
+      "leadsGerados": {
+        "total": 212,
+        "organicos": 24,
+        "pagos": 188
+      },
+      "leadsQualificados": {
+        "total": 67,
+        "porMarca": {
+          "Desconexo": null,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": 35,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": 32
+        }
+      },
+      "vendasFechadas": null,
+      "receita": 107521.0,
+      "investimento": 35273.52,
+      "roi": 304.82,
+      "taxaConversao": 10.45,
+      "observacoes": null
     }
   ]
 }
