@@ -682,7 +682,7 @@ function rPerformanceEmailsMKT(el){
   const gruposSemanaRecente = gruposArr
     .filter(g => g.semanaInicio === semanaRecente)
     .sort((a, b) => {
-      const ordem = { 'Desconexo': 0, 'Desco': 1, 'DNX Hotelaria': 2 };
+      const ordem = { 'Desconexo': 0, 'Desco': 1, 'DNX Hotelaria': 2, 'Grupo DNX': 3 };
       return (ordem[a.marca] ?? 99) - (ordem[b.marca] ?? 99);
     });
 
@@ -703,7 +703,7 @@ function rPerformanceEmailsMKT(el){
   })[m] || 'var(--t2)';
 
   const badgeMarca = (m) => {
-    const c = ({ 'Desconexo': 'br', 'Desco': 'bo', 'DNX Hotelaria': 'bb' })[m] || 'bgr';
+    const c = ({ 'Desconexo': 'br', 'Desco': 'bo', 'DNX Hotelaria': 'bb', 'Grupo DNX': 'bpu' })[m] || 'bgr';
     return `<span class="badge ${c}">${m}</span>`;
   };
 
@@ -780,7 +780,7 @@ function rPerformanceEmailsMKT(el){
   };
 
   // Botões de filtro por marca
-  const filtroMarcaHTML = ['todas', 'Desconexo', 'Desco', 'DNX Hotelaria'].map(m => {
+  const filtroMarcaHTML = ['todas', 'Desconexo', 'Desco', 'DNX Hotelaria', 'Grupo DNX'].map(m => {
     const label = m === 'todas' ? 'Todas' : m;
     return `<button class="fb ${EMKT_MARCA===m?'on':''}" onclick="EMKT_MARCA='${m}';render()">${label}</button>`;
   }).join('');
