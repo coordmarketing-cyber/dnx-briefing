@@ -2,6 +2,64 @@
   "_instrucoes": "Fechamentos mensais oficiais. Fonte: DADOS_PAINEL (aba GRUPO). Campos null = aguardando fechamento ou não aplicável.",
   "fechamentos": [
     {
+      "mes": "2026-09",
+      "label": "Setembro/2026",
+      "leadsGerados": {
+        "total": null,
+        "organicos": null,
+        "pagos": null
+      },
+      "leadsQualificados": {
+        "total": null,
+        "porMarca": {
+          "Desconexo": null,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": null,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": null
+        }
+      },
+      "vendasFechadas": null,
+      "receita": null,
+      "investimento": null,
+      "roi": null,
+      "taxaConversao": null,
+      "observacoes": "Aguardando fechamento oficial (DADOS_PAINEL). Emails MKT já atualizados: 12 disparos no mês."
+    },
+    {
+      "mes": "2026-08",
+      "label": "Agosto/2026",
+      "leadsGerados": {
+        "total": null,
+        "organicos": null,
+        "pagos": null
+      },
+      "leadsQualificados": {
+        "total": null,
+        "porMarca": {
+          "Desconexo": null,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": null,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": null
+        }
+      },
+      "vendasFechadas": null,
+      "receita": null,
+      "investimento": null,
+      "roi": null,
+      "taxaConversao": null,
+      "observacoes": "Aguardando fechamento oficial (DADOS_PAINEL). Emails MKT já atualizados: 16 disparos no mês."
+    },
+    {
       "mes": "2026-07",
       "label": "Julho/2026",
       "leadsGerados": {
