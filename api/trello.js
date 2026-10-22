@@ -6,8 +6,7 @@ const BOARDS = [
   { name: 'Marca Pablo',                   id: '69c5223867d694afd7d17e4d' },
   { name: 'GRUPO DNX | Ceará Autoral',     id: '69c2b29bd9183074fd575b9f' },
   { name: "JORNADA DE CAMPANHAS'26",       id: '697a1c4abd45ce76bea89fb3' },
-  { name: 'HUB NB BY DESCO',               id: '69c66fcbfbf6936927e1d5f0' },
-  { name: 'EZ MAIO - 26',                  id: '69c2faf19f45c3b470254729' }
+  { name: 'DESCO CORPORATIVO',             id: '69c66fcbfbf6936927e1d5f0' }
 ];
 
 export default async function handler(req, res) {
