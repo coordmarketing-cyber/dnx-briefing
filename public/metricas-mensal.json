@@ -1,18 +1,20 @@
 {
-  "_instrucoes": "Fechamentos mensais oficiais. Fonte: DADOS_PAINEL (aba GRUPO). Campos null = aguardando fechamento ou não aplicável.",
+  "_instrucoes": "Fechamentos mensais da marca Desconexo. Fonte única: desconexo.pages.dev (Meta Ads + bloco Conversão Comercial). Campos null = aguardando preenchimento no dash fonte. Padronizado em 22/10/2026 pra visão Desconexo-only.",
+  "fonte": "desconexo.pages.dev",
+  "escopo": "Marca Desconexo (não inclui Desco nem DNX Hotelaria)",
   "fechamentos": [
     {
-      "mes": "2026-09",
-      "label": "Setembro/2026",
+      "mes": "2026-10",
+      "label": "Outubro/2026",
       "leadsGerados": {
-        "total": null,
-        "organicos": null,
-        "pagos": null
+        "total": 55,
+        "organicos": 6,
+        "pagos": 49
       },
       "leadsQualificados": {
-        "total": null,
+        "total": 5,
         "porMarca": {
-          "Desconexo": null,
+          "Desconexo": 5,
           "Desco": null,
           "DNX Hotelaria": null
         },
@@ -23,17 +25,133 @@
           "Orgânico (redes)": null
         }
       },
-      "vendasFechadas": null,
-      "receita": null,
-      "investimento": null,
-      "roi": null,
-      "taxaConversao": null,
-      "observacoes": "Aguardando fechamento oficial (DADOS_PAINEL). Emails MKT já atualizados: 12 disparos no mês."
+      "vendasFechadas": 0,
+      "receita": 0,
+      "investimento": 1458.18,
+      "roi": 0.0,
+      "taxaConversao": 0.0,
+      "observacoes": "Dados Desconexo (dash) — PARCIAL, 22 dias veiculados em 22/10. Comercial: 55 leads (89,1% vindos de anúncio), 5 qualif (9,1% taxa qualif, queda vs set), 2 orçamentos, 0 vendas. CPL qualif subiu pra R$ 291,64."
+    },
+    {
+      "mes": "2026-09",
+      "label": "Setembro/2026",
+      "leadsGerados": {
+        "total": 34,
+        "organicos": 13,
+        "pagos": 21
+      },
+      "leadsQualificados": {
+        "total": 10,
+        "porMarca": {
+          "Desconexo": 10,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": null,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": null
+        }
+      },
+      "vendasFechadas": 1,
+      "receita": 20000,
+      "investimento": 1646.51,
+      "roi": 1214.51,
+      "taxaConversao": 10.0,
+      "observacoes": "Dados Desconexo (dash). Comercial: 34 leads, 10 qualif (29,4%), 8 orçamentos, 80% qualif em orçamento, 1 venda de R$ 20 mil. ROAS 12,15x. CAC: R$ 1.647. 12 disparos email MKT."
     },
     {
       "mes": "2026-08",
       "label": "Agosto/2026",
       "leadsGerados": {
+        "total": 69,
+        "organicos": 55,
+        "pagos": 14
+      },
+      "leadsQualificados": {
+        "total": 15,
+        "porMarca": {
+          "Desconexo": 15,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": null,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": null
+        }
+      },
+      "vendasFechadas": 0,
+      "receita": 0,
+      "investimento": 1002.13,
+      "roi": 0.0,
+      "taxaConversao": 0.0,
+      "observacoes": "Dados Desconexo (dash). Comercial: 69 leads, 15 qualif (21,7% taxa qualif), 8 orçamentos, R$ 444 mil em propostas, 0 vendas. CPL qualif: R$ 66,81. 16 disparos email MKT no mês."
+    },
+    {
+      "mes": "2026-07",
+      "label": "Julho/2026",
+      "leadsGerados": {
+        "total": 58,
+        "organicos": 58,
+        "pagos": 0
+      },
+      "leadsQualificados": {
+        "total": 17,
+        "porMarca": {
+          "Desconexo": 17,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": null,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": null
+        }
+      },
+      "vendasFechadas": 0,
+      "receita": 0,
+      "investimento": 725.78,
+      "roi": 0.0,
+      "taxaConversao": 0.0,
+      "observacoes": "Dados Desconexo (dash). Meta Ads: 16 leads · R$ 45,36 CPL. Comercial: 58 leads, 17 qualif (29,3% taxa qualif), 13 orçamentos, R$ 699 mil em propostas, 0 vendas. 100% dos qualif vieram de orgânico (0 de anúncio)."
+    },
+    {
+      "mes": "2026-06",
+      "label": "Junho/2026",
+      "leadsGerados": {
+        "total": 45,
+        "organicos": 23,
+        "pagos": 22
+      },
+      "leadsQualificados": {
+        "total": null,
+        "porMarca": {
+          "Desconexo": null,
+          "Desco": null,
+          "DNX Hotelaria": null
+        },
+        "porOrigem": {
+          "Pago": null,
+          "Newsletter": null,
+          "Site": null,
+          "Orgânico (redes)": null
+        }
+      },
+      "vendasFechadas": null,
+      "receita": null,
+      "investimento": 875.68,
+      "roi": null,
+      "taxaConversao": null,
+      "observacoes": "Dados Desconexo (dash). Meta Ads: 51 leads · R$ 17,17 CPL. Comercial: 45 leads (48,9% vindos de anúncio). Qualif/vendas aguardando no dash."
+    },
+    {
+      "mes": "2026-05",
+      "label": "Maio/2026",
+      "leadsGerados": {
         "total": null,
         "organicos": null,
         "pagos": null
@@ -54,213 +172,126 @@
       },
       "vendasFechadas": null,
       "receita": null,
-      "investimento": null,
+      "investimento": 1199.78,
       "roi": null,
       "taxaConversao": null,
-      "observacoes": "Aguardando fechamento oficial (DADOS_PAINEL). Emails MKT já atualizados: 16 disparos no mês."
-    },
-    {
-      "mes": "2026-07",
-      "label": "Julho/2026",
-      "leadsGerados": {
-        "total": 72,
-        "organicos": 72,
-        "pagos": 0
-      },
-      "leadsQualificados": {
-        "total": 26,
-        "porMarca": {
-          "Desconexo": 18,
-          "Desco": 8,
-          "DNX Hotelaria": 0
-        },
-        "porOrigem": {
-          "Pago": 0,
-          "Newsletter": null,
-          "Site": null,
-          "Orgânico (redes)": 26
-        }
-      },
-      "vendasFechadas": null,
-      "receita": null,
-      "investimento": null,
-      "roi": null,
-      "taxaConversao": 0.0,
-      "observacoes": "Fonte: DADOS_PAINEL (aba GRUPO). Sem investimento em anúncios ou ativações registrado. Todos os leads são orgânicos."
-    },
-    {
-      "mes": "2026-06",
-      "label": "Junho/2026",
-      "leadsGerados": {
-        "total": 60,
-        "organicos": 38,
-        "pagos": 22
-      },
-      "leadsQualificados": {
-        "total": 13,
-        "porMarca": {
-          "Desconexo": 10,
-          "Desco": 2,
-          "DNX Hotelaria": 1
-        },
-        "porOrigem": {
-          "Pago": 2,
-          "Newsletter": null,
-          "Site": null,
-          "Orgânico (redes)": 11
-        }
-      },
-      "vendasFechadas": null,
-      "receita": null,
-      "investimento": null,
-      "roi": null,
-      "taxaConversao": 0.0,
-      "observacoes": "Fonte: DADOS_PAINEL (aba GRUPO). Investimento em anúncios: R$ 875,68 (Desconexo). CPL: R$ 95,45. Receita/vendas aguardando confirmação."
-    },
-    {
-      "mes": "2026-05",
-      "label": "Maio/2026",
-      "leadsGerados": {
-        "total": 723,
-        "organicos": 362,
-        "pagos": 361
-      },
-      "leadsQualificados": {
-        "total": 49,
-        "porMarca": {
-          "Desconexo": null,
-          "Desco": null,
-          "DNX Hotelaria": null
-        },
-        "porOrigem": {
-          "Pago": 13,
-          "Newsletter": null,
-          "Site": null,
-          "Orgânico (redes)": 36
-        }
-      },
-      "vendasFechadas": null,
-      "receita": 118075.94,
-      "investimento": 83661.71,
-      "roi": 141.13,
-      "taxaConversao": 14.29,
-      "observacoes": null
+      "observacoes": "Dados Desconexo (dash). Meta Ads: 678 leads · R$ 1,77 CPL · 15 dias veiculados. Comercial: aguardando dados no dash. Nota: painel anterior usava consolidado do Grupo (49 qualif, R$ 118k receita) — mantido fora pra padronização Desconexo-only."
     },
     {
       "mes": "2026-04",
       "label": "Abril/2026",
       "leadsGerados": {
-        "total": 33,
-        "organicos": 23,
-        "pagos": 10
+        "total": 16,
+        "organicos": 7,
+        "pagos": 9
       },
       "leadsQualificados": {
-        "total": 18,
+        "total": null,
         "porMarca": {
           "Desconexo": null,
           "Desco": null,
           "DNX Hotelaria": null
         },
         "porOrigem": {
-          "Pago": 3,
+          "Pago": null,
           "Newsletter": null,
           "Site": null,
-          "Orgânico (redes)": 15
+          "Orgânico (redes)": null
         }
       },
       "vendasFechadas": null,
       "receita": null,
-      "investimento": 101693.51,
-      "roi": 0.0,
-      "taxaConversao": 0.0,
-      "observacoes": null
+      "investimento": 602.02,
+      "roi": null,
+      "taxaConversao": null,
+      "observacoes": "Dados Desconexo (dash). Meta Ads: 39 leads · R$ 15,44 CPL. Comercial: 16 leads (56,3% vindos de anúncio). Qualif/vendas aguardando no dash."
     },
     {
       "mes": "2026-03",
       "label": "Março/2026",
       "leadsGerados": {
-        "total": 84,
-        "organicos": 48,
-        "pagos": 36
+        "total": 49,
+        "organicos": 24,
+        "pagos": 25
       },
       "leadsQualificados": {
-        "total": 24,
+        "total": null,
         "porMarca": {
           "Desconexo": null,
           "Desco": null,
           "DNX Hotelaria": null
         },
         "porOrigem": {
-          "Pago": 6,
+          "Pago": null,
           "Newsletter": null,
           "Site": null,
-          "Orgânico (redes)": 18
+          "Orgânico (redes)": null
         }
       },
       "vendasFechadas": null,
-      "receita": 332000.0,
-      "investimento": 76832.76,
-      "roi": 432.11,
-      "taxaConversao": 8.33,
-      "observacoes": null
+      "receita": null,
+      "investimento": 806.33,
+      "roi": null,
+      "taxaConversao": null,
+      "observacoes": "Dados Desconexo (dash). Meta Ads: 69 leads · R$ 11,69 CPL. Comercial: 49 leads (51% vindos de anúncio). Qualif/vendas aguardando no dash."
     },
     {
       "mes": "2026-02",
       "label": "Fevereiro/2026",
       "leadsGerados": {
-        "total": 85,
-        "organicos": 37,
-        "pagos": 48
+        "total": 23,
+        "organicos": 6,
+        "pagos": 17
       },
       "leadsQualificados": {
-        "total": 18,
+        "total": null,
         "porMarca": {
           "Desconexo": null,
           "Desco": null,
           "DNX Hotelaria": null
         },
         "porOrigem": {
-          "Pago": 1,
+          "Pago": null,
           "Newsletter": null,
           "Site": null,
-          "Orgânico (redes)": 17
+          "Orgânico (redes)": null
         }
       },
       "vendasFechadas": null,
       "receita": null,
-      "investimento": 38756.27,
-      "roi": 0.0,
-      "taxaConversao": 0.0,
-      "observacoes": null
+      "investimento": 600.0,
+      "roi": null,
+      "taxaConversao": null,
+      "observacoes": "Dados Desconexo (dash). Meta Ads: 58 leads · R$ 10,34 CPL. Comercial: 23 leads (73,9% vindos de anúncio). Qualif/vendas aguardando no dash."
     },
     {
       "mes": "2026-01",
       "label": "Janeiro/2026",
       "leadsGerados": {
-        "total": 212,
-        "organicos": 24,
-        "pagos": 188
+        "total": 2,
+        "organicos": 2,
+        "pagos": 0
       },
       "leadsQualificados": {
-        "total": 67,
+        "total": null,
         "porMarca": {
           "Desconexo": null,
           "Desco": null,
           "DNX Hotelaria": null
         },
         "porOrigem": {
-          "Pago": 35,
+          "Pago": null,
           "Newsletter": null,
           "Site": null,
-          "Orgânico (redes)": 32
+          "Orgânico (redes)": null
         }
       },
       "vendasFechadas": null,
-      "receita": 107521.0,
-      "investimento": 35273.52,
-      "roi": 304.82,
-      "taxaConversao": 10.45,
-      "observacoes": null
+      "receita": null,
+      "investimento": 1972.85,
+      "roi": null,
+      "taxaConversao": null,
+      "observacoes": "Dados Desconexo (dash). Meta Ads: 242 leads · R$ 8,15 CPL · 193 msgs + 49 forms. Comercial: 2 leads totais, 0 vindos de anúncio. Qualif/vendas aguardando no dash."
     }
   ]
 }
