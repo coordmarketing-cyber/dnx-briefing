@@ -3,9 +3,7 @@
 // Token fica em process.env.MONDAY_TOKEN (configurado no Vercel).
 
 const BOARDS = [
-  { id: '18412069690', name: 'DNX HOTELARIA - Projeto Ohana' },
-  { id: '18416177633', name: 'ED TEMPO - CDT ENGENHARIA' },
-  { id: '18401830911', name: 'FAROL HOTEL' }
+  { id: '18412069690', name: 'DNX HOTELARIA - Projeto Ohana' }
 ];
 
 export default async function handler(req, res) {
